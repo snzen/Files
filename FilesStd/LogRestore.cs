@@ -30,7 +30,7 @@ namespace Utils.Files
 				string.Format("The local dir has {0} matching files.", F.Count).PrintLine();
 				if (F.Count > 0)
 				{
-					if (Utils.ReadWord("See them? (y/*)", "y"))
+					if (Utils.ReadWord("See them? (y/*): ", "y"))
 						foreach (var f in F)
 							f.PrintLine(ConsoleColor.Yellow);
 
@@ -42,10 +42,18 @@ namespace Utils.Files
 			}
 			else
 			{
-				Utils.ReadString("the restore dir: ", ref ra.State.DestinationDir, true);
-				"Name file path: ".Print();
-				var nameFilePath = Path.GetFullPath(Console.ReadLine());
-				var names = File.ReadAllLines(nameFilePath);
+				var newSrc = string.Empty;
+				Utils.ReadString("Source dir [default is local]: ", ref newSrc);
+				if (!string.IsNullOrEmpty(newSrc)) ra.ChangeRoot(newSrc);
+				Utils.ReadString("Restore dir: ", ref ra.State.DestinationDir, true);
+				var logfilePath = string.Empty;
+				Utils.ReadString("Log file path: ", ref logfilePath, true);
+				var names = File.ReadAllLines(logfilePath);
+				var recursive = Utils.ReadWord("Recursive? (y/*): ", "y");
+				var fullPaths = Utils.ReadWord("Use paths? [default is filenames] (y/*): ", "y");
+				var fullPathCut = string.Empty;
+				if (fullPaths) Utils.ReadString("Full path cut: [Ex: C:\\]: ", ref fullPathCut);
+				var copy = Utils.ReadWord("Copy? [default is move] (y/*): ", "y");
 
 				if (names == null || names.Length < 1)
 				{
@@ -55,12 +63,24 @@ namespace Utils.Files
 				else
 				{
 					var localNames = new HashSet<string>();
+					var map = new Dictionary<string, FileInfo>();
 
-					foreach (var f in ra.RootDir.GetFiles(ra.State.SearchPattern, SearchOption.TopDirectoryOnly))
-						localNames.Add(f.Name);
+					foreach (var f in ra.RootDir.GetFiles(ra.State.SearchPattern,
+						recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+					{
+						var key = f.Name;
+						if (fullPaths)
+						{
+							key = f.FullName;
+							if (!string.IsNullOrEmpty(fullPathCut))
+								key = key.Replace(fullPathCut, string.Empty);
+						}
+						localNames.Add(key);
+						if (!map.ContainsKey(key)) map.Add(key, f);
+					}
 
 					string.Format(
-						"{0} names in the log file, {1} in the local dir.",
+						"{0} names in the log file, {1} in the local directory tree.",
 							names.Length,
 							localNames.Count)
 						.PrintLine();
@@ -70,12 +90,12 @@ namespace Utils.Files
 					if (matchings.Count > 0)
 					{
 						string.Format("The local dir has {0} matching files.", matchings.Count).PrintLine();
-						if (Utils.ReadWord("See the  them? (y/*)", "y"))
+						if (Utils.ReadWord("See the  them? (y/*): ", "y"))
 							foreach (var f in matchings)
 								f.PrintLine(ConsoleColor.Yellow);
 
 						var q = string.Format(
-							"Restore the local dir matching files ({0}) to {1}? (y/*)",
+							"Restore the local dir matching files ({0}) to {1}? (y/*): ",
 							matchings.Count,
 							ra.State.DestinationDir);
 
@@ -84,9 +104,23 @@ namespace Utils.Files
 							var existing = new List<string>();
 							foreach (var f in matchings)
 							{
-								var lf = Path.Combine(ra.RootDir.FullName, f);
-								var rf = Path.Combine(ra.State.DestinationDir, f);
-								if (!File.Exists(rf)) File.Move(lf, rf);
+								var lf = fullPaths ? map[f].FullName : Path.Combine(ra.RootDir.FullName, f);
+								var rf = string.Empty;
+								if (fullPaths)
+								{
+									if (!string.IsNullOrEmpty(fullPathCut))
+										rf = map[f].FullName.Replace(fullPathCut, string.Empty);
+								}
+								else rf = f;
+
+								rf = Path.Combine(ra.State.DestinationDir, rf);
+								if (!File.Exists(rf))
+								{
+									var dir = Path.GetDirectoryName(rf);
+									if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+									if (copy) File.Copy(lf, rf);
+									else File.Move(lf, rf);
+								}
 								else existing.Add(f);
 							}
 							string.Format(
@@ -95,14 +129,14 @@ namespace Utils.Files
 									existing.Count)
 								.PrintLine();
 
-							if (existing.Count > 0 && Utils.ReadWord("See the skipped names? (y/*)", "y"))
+							if (existing.Count > 0 && Utils.ReadWord("See the skipped names? (y/*): ", "y"))
 								foreach (var f in existing)
 									f.PrintLine(ConsoleColor.Yellow);
 						}
 						else "Aborting.".PrintLine();
 					}
 					else string.Format(
-							"There are no local files matching the names in {0}.", nameFilePath)
+							"There are no local files matching the names in {0}.", logfilePath)
 							.PrintLine();
 				}
 			}
