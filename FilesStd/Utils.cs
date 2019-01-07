@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Utils.Files
 {
@@ -37,6 +38,18 @@ namespace Utils.Files
 			} while (loop);
 		}
 
+		public static void ReadDouble(this string msg, ref double target, bool loop = false)
+		{
+			do
+			{
+				msg.PrintInfo();
+				double temp = 0;
+				if (!double.TryParse(Console.ReadLine(), out temp)) continue;
+				target = temp;
+				return;
+			} while (loop);
+		}
+
 		public static void ReadIntIn(this string msg, ref int target, int[] accepted, bool loop = false)
 		{
 			do
@@ -63,14 +76,22 @@ namespace Utils.Files
 
 		public static void Print(this string msg, ConsoleColor? fc = null, ConsoleColor? bc = null, bool newLine = false)
 		{
-			var cfc = Console.ForegroundColor;
-			var cbc = Console.BackgroundColor;
-			if (fc.HasValue) Console.ForegroundColor = fc.Value;
-			if (bc.HasValue) Console.BackgroundColor = bc.Value;
-			Console.Write(msg);
-			Console.ForegroundColor = cfc;
-			Console.BackgroundColor = cbc;
-			if (newLine) Console.WriteLine();
+			bool acq = false;
+			sync.Enter(ref acq);
+
+			if (acq)
+			{
+				var cfc = Console.ForegroundColor;
+				var cbc = Console.BackgroundColor;
+				if (fc.HasValue) Console.ForegroundColor = fc.Value;
+				if (bc.HasValue) Console.BackgroundColor = bc.Value;
+				Console.Write(msg);
+				Console.ForegroundColor = cfc;
+				Console.BackgroundColor = cbc;
+				if (newLine) Console.WriteLine();
+
+				sync.Exit();
+			}
 		}
 
 		public static void PrintLine(this string msg, ConsoleColor? fc = null, ConsoleColor? bc = null)
@@ -137,5 +158,6 @@ namespace Utils.Files
 		}
 
 		static readonly string[] WSEP = new string[] { Environment.NewLine };
+		static SpinLock sync = new SpinLock();
 	}
 }

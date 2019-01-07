@@ -26,6 +26,12 @@ files -p ext -ni -sp *.png -ext jpg
    Args: not interactive (-ni), source dir [default is current] (-src), search
    pattern [*.*] (-sp), extension (-ext)
 
+### get 
+   Downloads resources listed in a map file with each link on a separate line.
+   Args: not interactive (-ni), links file (-f), base url (-base), destination
+   dir (-dest), max req/sec [5.0] (-rps) from file row [0] (-from), to file row
+   [last] (-to)
+
 ### logrestore
    Creates a file with paths (log), which can be used to move files (restore).
 
