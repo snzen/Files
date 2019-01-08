@@ -10,9 +10,18 @@ Some utils support changing the source dir, but the default is the current locat
 
 Launch a specific subprogram with the -p switch:
 
+.NET Framework 4.7.1
+
 ```
- files -p take <args>
+ files -p take
 ```
+
+.NET Core 2.1
+
+```
+dotnet <path-to-filles>/files.dll -p move
+```
+
 
 All subprograms start in interactive mode, unless the -ni switch is present and supported.
 
