@@ -10,7 +10,7 @@ namespace Utils.Files
 		public string Name => "rename";
 		public string Info => "Renames the matching files from the current folder with the names from a text file.";
 
-		public void Run(RunArgs ra)
+		public int Run(RunArgs ra)
 		{
 			Utils.ReadString("the path of the text file with the new file names: ", ref ra.State.FileNamesFilePath, true);
 			Utils.ReadString("destination dir: ", ref ra.State.DestinationDir, true);
@@ -55,7 +55,7 @@ namespace Utils.Files
 					"The new names length is {0} and the files to be renamed are {1}. Abort? (y/*)",
 					newNames.Length,
 					ra.State.Files.Length);
-				if (Utils.ReadWord(msg, "y")) return;
+				if (Utils.ReadWord(msg, "y")) return -1;
 			}
 
 			string.Format("Files - {0}, Names - {1}", newNames.Length, ra.State.Files.Length).PrintLine(ConsoleColor.Yellow);
@@ -94,7 +94,9 @@ namespace Utils.Files
 				ra.State.Files = FI.ToArray();
 				Console.WriteLine("Done - {0} files renamed.", ra.State.Files.Length);
 			}
-			else Console.WriteLine("Aborting Rename. Press <Enter> to exit.");
+			else Console.WriteLine("Aborting rename.");
+
+			return 0;
 		}
 
 		static void PadZeroes(ref string filename, RunArgs ra)

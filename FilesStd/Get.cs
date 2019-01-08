@@ -19,7 +19,7 @@ namespace Utils.Files
 			"from file row [0] (-from), to file row [last] (-to)";
 
 
-		public void Run(RunArgs ra)
+		public int Run(RunArgs ra)
 		{
 			bool interactive = !ra.InArgs.ContainsKey("-ni");
 			var baseUrl = string.Empty;
@@ -109,6 +109,8 @@ namespace Utils.Files
 			Console.WriteLine();
 			var dur = DateTime.Now.Subtract(startTime);
 			$"Done [{dur.Hours}h {dur.Minutes}m {dur.Seconds}s].".PrintInfo(true);
+
+			return 0;
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace Utils.Files
 		public string Name => "pad";
 		public string Info => "Adds leading zeros to the numbers in the file names.";
 
-		public void Run(RunArgs ra)
+		public int Run(RunArgs ra)
 		{
 			ra.State.DestinationDir = ra.RootDir.FullName;
 			Utils.ReadString("destination dir: ", ref ra.State.DestinationDir);
@@ -47,7 +47,9 @@ namespace Utils.Files
 				ra.State.Files = FI.ToArray();
 				Console.WriteLine("Done - {0} files renamed.", ra.State.Files.Length);
 			}
-			else Console.WriteLine("Aborting pad. Press <Enter> to exit.");
+			else Console.WriteLine("Aborting pad.");
+
+			return 0;
 		}
 
 		static void PadFiles(RunArgs ra, List<FileInfo> FI, bool forreal = false)

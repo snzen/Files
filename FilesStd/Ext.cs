@@ -12,7 +12,7 @@ namespace Utils.Files
 			"Args: not interactive (-ni), source dir [default is current] (-src), " +
 			"search pattern [*.*] (-sp), extension (-ext)";
 
-		public void Run(RunArgs ra)
+		public int Run(RunArgs ra)
 		{
 			bool interactive = !ra.InArgs.ContainsKey("-ni");
 
@@ -55,7 +55,9 @@ namespace Utils.Files
 				}
 				Console.WriteLine("Done - {0} files renamed.", ra.State.Files.Length);
 			}
-			else Console.WriteLine("Aborting Rename. Press <Enter> to exit.");
+			else Console.WriteLine("Aborting ext.");
+
+			return 0;
 		}
 	}
 }

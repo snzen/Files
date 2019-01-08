@@ -9,7 +9,7 @@ namespace Utils.Files
 		const int INFO_LINE_WIDTH = 65;
 		static RunArgs runArgs = new RunArgs();
 
-		public static void Run(string[] args)
+		public static int Run(string[] args)
 		{
 			var P = GetPrograms();
 			var pMap = new Dictionary<string, IUtil>();
@@ -44,35 +44,38 @@ namespace Utils.Files
 				{
 					do
 					{
-						if (a == "q") return;
+						if (a == "q") return 0;
 						Utils.ReadString("Choose an action or type 'q' to exit: ", ref a);
 					} while (!pMap.ContainsKey(a));
 					TryRunProgram(pMap[a]);
 				}
-
 			}
 			else if (inArgs.Map.ContainsKey("-p"))
 			{
 				var subProg = inArgs.Map["-p"];
 				if (subProg != null && subProg.Count > 0)
-					if (pMap.ContainsKey(subProg[0])) TryRunProgram(pMap[subProg[0]]);
+					if (pMap.ContainsKey(subProg[0])) return TryRunProgram(pMap[subProg[0]]);
 					else throw new Exception("Unknown subprogram.");
 			}
 
-			Console.ReadLine();
+			return 0;
 		}
 
-		static void TryRunProgram(IUtil utl)
+		static int TryRunProgram(IUtil utl)
 		{
+			var r = -1;
+
 			try
 			{
 				$"[{utl.Name}]".PrintLine(ConsoleColor.Green);
-				utl.Run(runArgs);
+				r = utl.Run(runArgs);
 			}
 			catch (Exception ex)
 			{
 				ex.Message.PrintLine(ConsoleColor.Red, ConsoleColor.White);
 			}
+
+			return r;
 		}
 
 		static List<Type> GetPrograms()

@@ -12,7 +12,7 @@ namespace Utils.Files
 			$"Args: not interactive (-ni), source dir [default is current] (-src), destination dir (-dest), " +
 			$"search pattern [*.*] (-sp), prefix (-prf), take count (-take) move [default is copy mode] (-move)";
 
-		public void Run(RunArgs ra)
+		public int Run(RunArgs ra)
 		{
 			bool interactive = !ra.InArgs.ContainsKey("-ni");
 			var copy = true;
@@ -79,7 +79,9 @@ namespace Utils.Files
 				ra.State.Files = FI.ToArray();
 				Console.WriteLine("Done - {0} files copied.", ra.State.Take);
 			}
-			else Console.WriteLine("Aborting Take. Press <Enter> to exit.");
+			else Console.WriteLine("Aborting take.");
+
+			return 0;
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace Utils.Files
 		public string Name => "move";
 		public string Info => "Moves the matching files from the current dir as DestinationDir/Prefix + Counter. Can be used as rename.";
 
-		public void Run(RunArgs ra)
+		public int Run(RunArgs ra)
 		{
 			Utils.ReadString("destination dir: ", ref ra.State.DestinationDir, true);
 			Utils.ReadString("search pattern (*.*): ", ref ra.State.SearchPattern);
@@ -75,7 +75,9 @@ namespace Utils.Files
 				ra.State.Files = FI.ToArray();
 				Console.WriteLine("Done - {0} files renamed.", ra.State.Files.Length);
 			}
-			else Console.WriteLine("Aborting Rename. Press <Enter> to exit.");
+			else Console.WriteLine("Aborting move.");
+
+			return 0;
 		}
 
 		static void PadZeroes(ref string filename, RunArgs ra)

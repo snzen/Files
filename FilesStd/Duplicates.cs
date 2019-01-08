@@ -16,7 +16,7 @@ namespace Utils.Files
 			"Detects file duplicates in one or more folders by comparing sizes, names or data hashes." + Environment.NewLine +
 			"There are extension and size filters as well as an option for partial hashing by skip/taking portions of the files.";
 
-		public void Run(RunArgs ra)
+		public int Run(RunArgs ra)
 		{
 			var srcDirs = new List<DirectoryInfo>();
 			var srcs = string.Empty;
@@ -105,6 +105,7 @@ namespace Utils.Files
 			var dict = new Dictionary<string, List<FileInfo>>();
 			var sb = new StringBuilder();
 			var totalFiles = 0;
+			var totalFilesChecked = 0;
 
 			// In all cases the length will be the same
 			foreach (var src in All)
@@ -115,6 +116,7 @@ namespace Utils.Files
 						dict.Add(key, new List<FileInfo>());
 					else totalFiles++;
 
+					totalFilesChecked++;
 					dict[key].Add(fi);
 				}
 
@@ -128,6 +130,7 @@ namespace Utils.Files
 			var hashDictSpin = new SpinLock();
 
 			Console.WriteLine();
+			$"Total files checked: {totalFilesChecked}".PrintLine();
 			Console.CursorVisible = false;
 			var cursorTop = Console.CursorTop;
 
@@ -203,7 +206,10 @@ namespace Utils.Files
 			foreach (var kv in hashDict)
 				if (kv.Value.Count > 1)
 				{
-					sb.AppendLine($"[{kv.Key}] {kv.Value[0].Length / 1000}Kb");
+					var size = kv.Value[0].Length / 1000;
+					string lbl = size < 1 ? lbl = $"{kv.Value[0].Length}b" : $"{size}Kb";
+
+					sb.AppendLine($"[{kv.Key}] {lbl}");
 					foreach (var p in kv.Value)
 						sb.AppendLine(p.FullName);
 
@@ -225,8 +231,9 @@ namespace Utils.Files
 					Utils.ReadString("Result file path: ", ref fn, true);
 					File.WriteAllText(fn, sb.ToString());
 				}
-				else Console.WriteLine("Aborting. Press <Enter> to exit.");
 			}
+
+			return 0;
 		}
 	}
 }

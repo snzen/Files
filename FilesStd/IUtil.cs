@@ -2,7 +2,7 @@
 {
 	public interface IUtil
 	{
-		void Run(RunArgs args);
+		int Run(RunArgs args);
 		string Info { get; }
 		string Name { get; }
 	}

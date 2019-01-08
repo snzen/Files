@@ -2,9 +2,9 @@
 {
 	class Program
 	{
-		static void Main(string[] args)
+		static int Main(string[] args)
 		{
-			Files.Run(args);
+			return Files.Run(args);
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace Utils.Files
 		public string Name => "logrestore";
 		public string Info => "Creates a file with paths (log), which can be used to move files (restore).";
 
-		public void Run(RunArgs ra)
+		public int Run(RunArgs ra)
 		{
 			"The Log can:".PrintLine();
 			" (log) save the file names in the current dir".PrintLine();
@@ -58,7 +58,6 @@ namespace Utils.Files
 				if (names == null || names.Length < 1)
 				{
 					"No names found.".PrintLine();
-					return;
 				}
 				else
 				{
@@ -140,6 +139,8 @@ namespace Utils.Files
 							.PrintLine();
 				}
 			}
+
+			return 0;
 		}
 	}
 }
