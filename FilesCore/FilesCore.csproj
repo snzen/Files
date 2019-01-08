@@ -11,4 +11,10 @@
     <ProjectReference Include="..\filesstd\FilesStd.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="files.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
