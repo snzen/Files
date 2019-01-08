@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 namespace Utils.Files
 {
@@ -27,10 +28,10 @@ namespace Utils.Files
 			Utils.ReadString("Enter folders to search into, separated by semicolon: ", ref srcs, true);
 			Utils.ReadString("Search pattern (*.*): ", ref ra.State.SearchPattern);
 			var recursive = !Utils.ReadWord("Recursive search (default is yes)? (n/*): ", "n");
-
-			Utils.ReadInt($"skip files with size < ({skipLessThanSize})Kb: ", ref skipLessThanSize, false);
-			Utils.ReadInt($"skip files with size > ({skipMoreThanSize})Kb: ", ref skipMoreThanSize, false);
-			Utils.ReadString("skip extensions (.xyz): ", ref ignExt, false);
+			"For hash compares with skip/take the min file size must be the take length.".PrintLine();
+			Utils.ReadInt($"Skip if size < ({skipLessThanSize})Kb: ", ref skipLessThanSize, false);
+			Utils.ReadInt($"Skip if size > ({skipMoreThanSize})Kb: ", ref skipMoreThanSize, false);
+			Utils.ReadString("Skip extensions (.xyz): ", ref ignExt, false);
 
 			if (!string.IsNullOrEmpty(ignExt))
 				foreach (var ext in ignExt.Split(';'))
@@ -44,18 +45,16 @@ namespace Utils.Files
 
 			if (compHash)
 			{
-				Utils.ReadInt($"concurrent readers (1-{Environment.ProcessorCount}): ", ref inParallel);
-				Console.WriteLine(
-					"By default the hash is computed over the whole file. {0}You can use skip and take parameters " +
-					"to take a portion of the data.", Environment.NewLine);
-
-				useStreamReduction = !Utils.ReadWord("Do you want to use skip/take? (n/*): ", "n");
+				Utils.ReadInt($"Concurrent readers (1-{Environment.ProcessorCount}): ", ref inParallel);
+				"By default the hash is computed over the whole file.".PrintLine();
+				"You can use skip and take parameters to read a portion of the file.".PrintLine();
+				useStreamReduction = Utils.ReadWord("Do you want to use skip/take? (y/*): ", "y");
 
 				if (useStreamReduction)
 				{
 					"The reader always starts with a TAKE (position 0).".PrintLine();
-					Utils.ReadInt($"take bytes ({take}): ", ref take, false);
-					Utils.ReadInt($"skip bytes ({skip}): ", ref skip, false);
+					Utils.ReadInt($"Take bytes ({take}): ", ref take, false);
+					Utils.ReadInt($"Skip bytes ({skip}): ", ref skip, false);
 
 					if (skip < 0 || take < 0) throw new ArgumentOutOfRangeException("Negative skip or take value.");
 				}
@@ -126,10 +125,9 @@ namespace Utils.Files
 			var hashDict = new Dictionary<string, List<FileInfo>>();
 			var totalDuplicates = 0;
 			var counter = 0;
-			var lockHashLoop = new object();
+			var hashDictSpin = new SpinLock();
 
-			$"Comparing...".PrintLine();
-
+			Console.WriteLine();
 			Console.CursorVisible = false;
 			var cursorTop = Console.CursorTop;
 
@@ -149,20 +147,21 @@ namespace Utils.Files
 								using (var md5 = MD5.Create())
 								using (stream)
 								{
-									lock (lockHashLoop)
-									{
-										$"{++counter}/{totalFiles} [{kv.Value[i].Length / 1000}]Kb file{i} = {kv.Value[i].FullName}".PrintLine(ConsoleColor.Yellow);
-									}
+									$"{++counter}/{totalFiles} [{kv.Value[i].Length / 1000}]Kb file{i} = {kv.Value[i].FullName}".PrintLine(ConsoleColor.Yellow);
 
 									var h = md5.ComputeHash(stream);
 									var key = BitConverter.ToString(h);
+									var acq = false;
 
-									lock (lockHashLoop)
+									hashDictSpin.Enter(ref acq);
+
+									if (acq)
 									{
 										if (!hashDict.ContainsKey(key)) hashDict.Add(key, new List<FileInfo>());
 										else totalDuplicates++;
 
 										hashDict[key].Add(kv.Value[i]);
+										hashDictSpin.Exit();
 									}
 								}
 							}
@@ -191,14 +190,14 @@ namespace Utils.Files
 							else totalDuplicates++;
 
 							hashDict[key].Add(f);
-							$"comparing {++counter}/{totalFiles}".Print(ConsoleColor.Yellow);
+							$"Comparing {++counter}/{totalFiles}".Print(ConsoleColor.Yellow);
 							Console.SetCursorPosition(0, Console.CursorTop);
 						}
 
 			Console.SetCursorPosition(0, cursorTop);
 			Console.CursorVisible = true;
 
-			sb.AppendLine("Files with the same name and length are grouped together.");
+			sb.AppendLine("Files with the same length and name/hash are grouped together.");
 			sb.AppendLine();
 
 			foreach (var kv in hashDict)
@@ -223,7 +222,7 @@ namespace Utils.Files
 				if (Utils.ReadWord("Save results? (y/*): ", "y"))
 				{
 					var fn = string.Empty;
-					Utils.ReadString("result file path: ", ref fn, true);
+					Utils.ReadString("Result file path: ", ref fn, true);
 					File.WriteAllText(fn, sb.ToString());
 				}
 				else Console.WriteLine("Aborting. Press <Enter> to exit.");

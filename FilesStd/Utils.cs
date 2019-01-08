@@ -94,12 +94,8 @@ namespace Utils.Files
 			}
 		}
 
-		public static void PrintLine(this string msg, ConsoleColor? fc = null, ConsoleColor? bc = null)
-		{
-			Print(msg, fc, bc);
-			Console.WriteLine();
-		}
-
+		public static void PrintLine(this string msg, ConsoleColor? fc = null, ConsoleColor? bc = null) =>
+			Print(msg, fc, bc, true);
 
 		public static IEnumerable<string> Slice(this string line, int maxLen)
 		{
