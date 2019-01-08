@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Utils.Files
 {
@@ -38,8 +39,8 @@ namespace Utils.Files
 			var compHash = Utils.ReadWord("Compare file names (default) or MD5 hashes? (h/*): ", "h");
 			var inParallel = 1;
 			var useStreamReduction = false;
-			var take = 1000;
-			var skip = 6000;
+			var take = 4000;
+			var skip = 10000;
 
 			if (compHash)
 			{
@@ -76,12 +77,12 @@ namespace Utils.Files
 			foreach (var d in srcDirs)
 				try
 				{
-					foreach (var sd in d.EnumerateDirectories("*", searchOpt))
+					foreach (var sd in d.EnumerateDirectories("*", searchOpt).Union(new DirectoryInfo[] { d }))
 						try
 						{
 							var L = new List<FileInfo>();
 
-							foreach (var file in sd.EnumerateFiles(ra.State.SearchPattern, searchOpt))
+							foreach (var file in sd.EnumerateFiles(ra.State.SearchPattern, SearchOption.TopDirectoryOnly))
 							{
 								if (iExt.Count > 0 && iExt.Contains(file.Extension)) continue;
 								if (skipLessThanSize > 0 && file.Length < skipLessThanSize) continue;
@@ -126,6 +127,9 @@ namespace Utils.Files
 			var totalDuplicates = 0;
 			var counter = 0;
 			var lockHashLoop = new object();
+
+			$"Comparing...".PrintLine();
+
 			Console.CursorVisible = false;
 			var cursorTop = Console.CursorTop;
 
@@ -200,6 +204,7 @@ namespace Utils.Files
 			foreach (var kv in hashDict)
 				if (kv.Value.Count > 1)
 				{
+					sb.AppendLine($"[{kv.Key}] {kv.Value[0].Length / 1000}Kb");
 					foreach (var p in kv.Value)
 						sb.AppendLine(p.FullName);
 
