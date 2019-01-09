@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
+using System.Xml.Serialization;
 
 namespace Utils.Files
 {
@@ -28,9 +29,8 @@ namespace Utils.Files
 			Utils.ReadString("Enter folders to search into, separated by semicolon: ", ref srcs, true);
 			Utils.ReadString("Search pattern (*.*): ", ref ra.State.SearchPattern);
 			var recursive = !Utils.ReadWord("Recursive search (default is yes)? (n/*): ", "n");
-			"For hash compares with skip/take the min file size must be the take length.".PrintLine();
-			Utils.ReadInt($"Skip if size < ({skipLessThanSize})Kb: ", ref skipLessThanSize, false);
-			Utils.ReadInt($"Skip if size > ({skipMoreThanSize})Kb: ", ref skipMoreThanSize, false);
+			Utils.ReadInt($"Skip if size < #Kb: ", ref skipLessThanSize, false);
+			Utils.ReadInt($"Skip if size > #Kb: ", ref skipMoreThanSize, false);
 			Utils.ReadString("Skip extensions (.xyz): ", ref ignExt, false);
 
 			if (!string.IsNullOrEmpty(ignExt))
@@ -225,15 +225,54 @@ namespace Utils.Files
 
 				if (ra.Trace) sb.ToString().PrintLine(ConsoleColor.Yellow);
 
-				if (Utils.ReadWord("Save results? (y/*): ", "y"))
+				var opt = string.Empty;
+
+				if (Utils.PickOption("Save results? (xml, json, txt): ", ref opt, false, "xml", "json", "txt"))
 				{
 					var fn = string.Empty;
+					var data = string.Empty;
+
 					Utils.ReadString("Result file path: ", ref fn, true);
-					File.WriteAllText(fn, sb.ToString());
+
+					if (opt == "txt") data = sb.ToString();
+					else
+					{
+						var L = new List<Duplicate>();
+
+						foreach (var kv in hashDict)
+							if (kv.Value.Count > 1)
+								L.Add(new Duplicate(kv.Key, kv.Value[0].Length, kv.Value.Select(x => x.FullName).ToArray()));
+
+						if (opt == "json") data = L.ToJson();
+						else data = L.ToXml();
+					}
+
+					File.WriteAllText(fn, data);
 				}
 			}
 
 			return 0;
 		}
+	}
+
+	public class Duplicate
+	{
+		public Duplicate() { }
+
+		public Duplicate(string key, long size, string[] files)
+		{
+			Key = key;
+			Files = files;
+			Size = size;
+		}
+
+		[XmlAttribute]
+		public string Key;
+
+		[XmlAttribute]
+		public long Size;
+
+		[XmlElement("fp")]
+		public string[] Files;
 	}
 }

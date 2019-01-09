@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
+using System.Xml.Serialization;
 
 namespace Utils.Files
 {
@@ -18,6 +21,24 @@ namespace Utils.Files
 				target = s;
 				return;
 			} while (loop);
+		}
+
+
+		public static bool PickOption(this string msg, ref string target, bool loop, params string[] options)
+		{
+			if (options == null || options.Length < 1) throw new ArgumentNullException("options");
+
+			do
+			{
+				msg.PrintInfo();
+				var s = Console.ReadLine();
+				if (string.IsNullOrEmpty(s)) continue;
+				if (!options.Contains(s)) continue;
+				target = s;
+				return true;
+			} while (loop);
+
+			return false;
 		}
 
 		public static bool ReadWord(this string msg, string matchword)
@@ -150,6 +171,32 @@ namespace Utils.Files
 				var tmp = arr[i];
 				arr[i] = arr[ri];
 				arr[ri] = tmp;
+			}
+		}
+
+		public static string ToJson<T>(this T o)
+		{
+			using (var ms = new MemoryStream())
+			{
+				var s = new DataContractJsonSerializer(typeof(T));
+
+				s.WriteObject(ms, o);
+				var bytes = ms.ToArray();
+
+				return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+			}
+		}
+
+		public static string ToXml<T>(this T o)
+		{
+			using (var ms = new MemoryStream())
+			{
+				var s = new XmlSerializer(typeof(T));
+
+				s.Serialize(ms, o);
+				var bytes = ms.ToArray();
+
+				return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 			}
 		}
 

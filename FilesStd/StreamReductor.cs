@@ -19,11 +19,16 @@ namespace Utils.Files
 			{
 				// How many take+skip tiles fit in the original stream length
 				long totalTakes = original.Length / (skip + take);
-				// The last tile is cut either on the take or the skip side
-				var rem = totalTakes += original.Length % (skip + take);
-				// If the remainder is less than the take - get the remainder, esle the cut is on skip.
-				totalTakes += (rem < take) ? rem : take;
-				length = totalTakes;
+				if (totalTakes > 0)
+				{
+					// The total bytes to be read - rem
+					length = (totalTakes * take);
+					// The last tile is cut either on the take or the skip side
+					var rem = original.Length % (skip + take);
+					// If the remainder is less than the take - get the remainder, otherwise the cut is on skip.
+					length += (rem < take) ? rem : take;
+				}
+				else length = original.Length > take ? take : original.Length;
 			}
 			else length = -1;
 		}
@@ -64,7 +69,7 @@ namespace Utils.Files
 					// this is terribly slow, should make use of a bigger array
 					while (original.Position < sPos)
 						original.Read(onebyte, 0, 1);
-				
+
 				// read up to the end of the tile
 				while (toRead > 0)
 				{

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using TestSurface;
@@ -17,8 +18,10 @@ namespace Test
 		public async Task Run(IDictionary<string, List<string>> args)
 		{
 			NormalReduction();
-			NonSeekableMemoryStream();
-			OutOfBounds();
+			if (!Passed.HasValue || Passed.Value) NonSeekableMemoryStream();
+			if (!Passed.HasValue || Passed.Value) OutOfBounds();
+			if (!Passed.HasValue || Passed.Value) SmallerThanTake();
+			if (!Passed.HasValue || Passed.Value) SmallerThanSkipTake();
 		}
 
 		public void NormalReduction()
@@ -56,7 +59,89 @@ namespace Test
 					}
 
 				if (Passed.HasValue && !Passed.Value) FailureMessage = "Normal Reduction on seek-able stream failed to read the correct bytes";
-				else Passed = true;
+				else
+				{
+					Passed = true;
+					"[OK] Normal Reduction".AsSuccess();
+				}
+			}
+		}
+
+		public void SmallerThanTake()
+		{
+			"> The data is smaller than a TAKE:".AsInfo();
+
+			var bytes = new byte[100];
+			byte b = 0;
+
+			for (int i = 0; i < bytes.Length; i++)
+				bytes[i] = b++;
+
+			const int SKIP = 400;
+			const int TAKE = 200;
+			const int READ = 1000;
+			var readBuff = new byte[READ];
+
+			using (var ms = new MemoryStream(bytes))
+			using (var rs = new StreamReductor(ms, SKIP, TAKE))
+			{
+				rs.Read(readBuff, 0, TAKE);
+
+				for (int i = 0; i < bytes.Length; i++)
+					if (readBuff[i] != i)
+					{
+						Passed = false;
+						break;
+					}
+
+				if (readBuff[bytes.Length] != 0) Passed = false;
+
+				if (Passed.HasValue && !Passed.Value) FailureMessage = "Smaller than a TAKE fails.";
+				else
+				{
+					Passed = true;
+					"[OK] SmallerThanTake".AsSuccess();
+				}
+			}
+		}
+
+		public void SmallerThanSkipTake()
+		{
+			"> The data is smaller than a SKIP + TAKE:".AsInfo();
+
+			var bytes = new byte[100];
+			byte b = 0;
+
+			for (int i = 0; i < bytes.Length; i++)
+				bytes[i] = b++;
+
+			const int SKIP = 80;
+			const int TAKE = 40;
+			const int READ = 200;
+			var readBuff = new byte[READ];
+
+			using (var ms = new MemoryStream(bytes))
+			using (var rs = new StreamReductor(ms, SKIP, TAKE))
+			{
+				rs.Read(readBuff, 0, READ);
+
+				var LIM = Math.Min(TAKE, bytes.Length);
+
+				for (int i = 0; i < LIM; i++)
+					if (readBuff[i] != i)
+					{
+						Passed = false;
+						break;
+					}
+
+				if (readBuff[LIM] != 0) Passed = false;
+
+				if (Passed.HasValue && !Passed.Value) FailureMessage = "Smaller than SKIP + TAKE fails.";
+				else
+				{
+					Passed = true;
+					"[OK] SmallerThanSkipTake".AsSuccess();
+				}
 			}
 		}
 
@@ -95,7 +180,11 @@ namespace Test
 					}
 
 				if (Passed.HasValue && !Passed.Value) FailureMessage = "Normal Reduction on seek-able stream failed to read the correct bytes";
-				else Passed = true;
+				else
+				{
+					Passed = true;
+					"[OK] NonSeekableMemoryStream".AsSuccess();
+				}
 			}
 		}
 
@@ -133,6 +222,7 @@ namespace Test
 				}
 
 				if (!Passed.HasValue) Passed = true;
+				if (Passed.Value) "[OK] OutOfBounds".AsSuccess();
 			}
 		}
 	}
