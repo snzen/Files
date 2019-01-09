@@ -21,7 +21,7 @@ namespace Utils.Files
 		{
 			var srcDirs = new List<DirectoryInfo>();
 			var srcs = string.Empty;
-			var skipLessThanSize = -1;
+			var skipLessThanSize = 1;
 			var skipMoreThanSize = -1;
 			var ignExt = string.Empty;
 			var iExt = new List<string>();
@@ -29,7 +29,7 @@ namespace Utils.Files
 			Utils.ReadString("Enter folders to search into, separated by semicolon: ", ref srcs, true);
 			Utils.ReadString("Search pattern (*.*): ", ref ra.State.SearchPattern);
 			var recursive = !Utils.ReadWord("Recursive search (default is yes)? (n/*): ", "n");
-			Utils.ReadInt($"Skip if size < #Kb: ", ref skipLessThanSize, false);
+			Utils.ReadInt($"Skip if size < 1Kb: ", ref skipLessThanSize, false);
 			Utils.ReadInt($"Skip if size > #Kb: ", ref skipMoreThanSize, false);
 			Utils.ReadString("Skip extensions (.xyz): ", ref ignExt, false);
 
@@ -227,7 +227,7 @@ namespace Utils.Files
 
 				var opt = string.Empty;
 
-				if (Utils.PickOption("Save results? (xml, json, txt): ", ref opt, false, "xml", "json", "txt"))
+				if (Utils.PickOption("Save results? (xml, json, txt/*): ", ref opt, false, "xml", "json", "txt"))
 				{
 					var fn = string.Empty;
 					var data = string.Empty;
