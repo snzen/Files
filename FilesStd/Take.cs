@@ -8,9 +8,9 @@ namespace Utils.Files
 	{
 		public string Name => "take";
 		public string Info =>
-			$"Copies or moves n random files from the current folder into a destination folder." + Environment.NewLine +
-			$"Args: not interactive (-ni), source dir [default is current] (-src), destination dir (-dest), " +
-			$"search pattern [*.*] (-sp), prefix (-prf), take count (-take) move [default is copy mode] (-move)";
+			"Copies or moves n random files from the current folder into a destination folder." + Environment.NewLine +
+			"Args: not interactive (-ni), source dir [default is current] (-src), destination dir (-dest), " +
+			"search pattern [*.*] (-sp), prefix (-prf), take count (-take) move [default is copy mode] (-move)";
 
 		public int Run(RunArgs ra)
 		{

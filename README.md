@@ -30,21 +30,43 @@ files -p ext -ni -sp *.png -ext jpg
 ```
 
 ### duplicates
-   Detects file duplicates in one or more folders by comparing sizes, names or
-   data hashes.
+   Detects file duplicates in one or more folders by comparing sizes, names or data hashes.
    There are extension and size filters as well as option for partial hashing
    by skip/taking portions of the files.
 
 ### ext
-   Recursively changes the extensions of all matched files.
-   Args: not interactive (-ni), source dir [default is current] (-src), search
-   pattern [*.*] (-sp), extension (-ext)
+   Recursively changes the extensions of all matched files.  
+   Args:
+
+	not interactive (-ni)
+	source dir [default is current] (-src)
+	search pattern [*.*] (-sp), extension (-ext)
 
 ### get 
-   Downloads resources listed in a map file with each link on a separate line.
-   Args: not interactive (-ni), links file (-f), base url (-base), destination
-   dir (-dest), max req/sec [5.0] (-rps) from file row [0] (-from), to file row
-   [last] (-to)
+   Downloads resources listed in a map file with each link on a separate line.  
+   Args: 
+
+	not interactive (-ni)
+	links file (-f)
+	base url (-base)
+	destination dir (-dest)
+	max req/sec [5.0] (-rps)
+	from file row [0] (-from)
+	to file row [last] (-to)
+
+### insert
+   Appends/prepends text to a file.  
+   Args:
+	
+	not interactive (-ni)
+	source dir [default is current] (-src)
+	search pattern [*.*] (-sp)
+	ignore regex [optional Ex: (?:path\A|path\B)] (-ireg)
+	recursive [y/*] (-r)
+	text file [if not -txt] (-tf)
+	text [if not -tf] (-txt)
+	append [by default prepends] (-append)
+	override [by default inserts] (-ovr)
 
 ### logrestore
    Creates a file with paths (log), which can be used to move files (restore).
@@ -61,8 +83,13 @@ files -p ext -ni -sp *.png -ext jpg
    file.
 
 ### take
-   Copies or moves n random files from the current folder into a destination
-   folder.
-   Args: not interactive (-ni), source dir [default is current] (-src),
-   destination dir (-dest), search pattern [*.*] (-sp), prefix (-prf), take
-   count (-take) move [default is copy mode] (-move)
+   Copies or moves n random files from the current folder into a destination folder.    
+   Args:
+	
+	not interactive (-ni)
+	source dir [default is current] (-src)
+	destination dir (-dest)
+	search pattern [*.*] (-sp)
+	prefix (-prf)
+	take count (-take)
+	move [default is copy mode] (-move)

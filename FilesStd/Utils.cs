@@ -200,6 +200,36 @@ namespace Utils.Files
 			}
 		}
 
+		/// <summary>
+		/// Writes a text content to a file.
+		/// </summary>
+		/// <param name="path">The full file path</param>
+		/// <param name="text">The data to be written</param>
+		/// <param name="ovr">If true will override the existing content</param>
+		/// <param name="end">At the end</param>
+		/// <remarks>Not safe if there are concurrent writes to the file</remarks>
+		public static void WriteToFile(string path, string text, bool ovr, bool end)
+		{
+			// Append, have to read it
+			if (!ovr && !end)
+			{
+				var ctext = File.ReadAllText(path);
+				File.WriteAllText(path, text + ctext);
+			}
+			else using (var fs = new FileStream(path, FileMode.Open, FileAccess.Write))
+				{
+					if (end)
+					{
+						if (ovr) fs.Seek(-text.Length, SeekOrigin.End);
+						else fs.Seek(0, SeekOrigin.End);
+					}
+					else fs.Seek(0, SeekOrigin.Begin);
+
+					var bytes = Encoding.UTF8.GetBytes(text);
+					fs.Write(bytes, 0, bytes.Length);
+				}
+		}
+
 		static readonly string[] WSEP = new string[] { Environment.NewLine };
 		static SpinLock sync = new SpinLock();
 	}
