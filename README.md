@@ -55,7 +55,7 @@ files -p ext -ni -sp *.png -ext jpg
 	to file row [last] (-to)
 
 ### insert
-   Appends/prepends text to a file.  
+   Inserts/overrides the beginning or the end of all matching files with custom content.  
    Args:
 	
 	not interactive (-ni)

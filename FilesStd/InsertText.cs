@@ -8,7 +8,7 @@ namespace Utils.Files
 	public class InsertText : IUtil
 	{
 		public string Name => "insert";
-		public string Info => "Appends/prepends text" + Environment.NewLine +
+		public string Info => "Inserts/overrides the beginning or the end of all matching files with custom content. " + Environment.NewLine +
 			"Args: interactive (-ni), source dir [default is current] (-src), search pattern [*.*] (-sp), " +
 			"ignore regex [optional, Ex: (?:path\\A|path\\B)] (-ireg), " +
 			"recursive [y/*] (-r), text file [if not -txt] (-tf), text [if not -tf] (-txt)," +
