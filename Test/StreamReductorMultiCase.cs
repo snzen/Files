@@ -13,7 +13,7 @@ namespace Test
 		public string FailureMessage { get; set; }
 		public bool? Passed { get; set; }
 		public bool IsComplete { get; set; }
-		public bool RequiresArgs => false;
+		public bool IndependentLaunchOnly => false;
 
 		public async Task Run(IDictionary<string, List<string>> args)
 		{
