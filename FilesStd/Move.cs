@@ -8,42 +8,49 @@ namespace Utils.Files
 	public class Move : IUtil
 	{
 		public string Name => "move";
-		public string Info => "Moves the matching files from the current dir as DestinationDir/Prefix + Counter. Can be used as rename.";
+		public string Info =>
+			"Moves the matching files to DestinationDir/Prefix + Counter. Can be used as rename." + Environment.NewLine +
+			"Args: not interactive (-ni), source (-src), destination dir (-dest), prefix (-prf), indexing counter (-ic), ic step (-step)" +
+			"Number length with zero padding (-zpad), Sort options: (-sort) no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5.";
 
 		public int Run(RunArgs ra)
 		{
-			Utils.ReadString("destination dir: ", ref ra.State.DestinationDir, true);
-			Utils.ReadString("search pattern (*.*): ", ref ra.State.SearchPattern);
-			Utils.ReadString("prefix: ", ref ra.State.Prefix);
-			Utils.ReadInt("counter (0) : ", ref ra.State.NameCounter);
-			Utils.ReadInt("counter step (1) : ", ref ra.State.NameCounterStep);
-			Utils.ReadInt("number length with zero padding (6) : ", ref ra.State.PadZeroes);
-			Console.WriteLine("sort options: no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5. ");
-			int sort = 0;
-			Utils.ReadIntIn("sort first (no) : ", ref sort, new int[] { 0, 1, 2, 3, 4, 5 });
+			bool interactive = !ra.InArgs.ContainsKey("-ni");
+			int sort = 4;
+			string src = null;
+			ra.Trace = false;
+
+			if (interactive)
+			{
+				Utils.ReadString("Source dir (current): ", ref src);
+				Utils.ReadString("Destination dir: ", ref ra.State.DestinationDir, true);
+				Utils.ReadString("Search pattern (*.*): ", ref ra.State.SearchPattern);
+				Utils.ReadString("Prefix: ", ref ra.State.Prefix);
+				Utils.ReadInt("Counter (0): ", ref ra.State.NameCounter);
+				Utils.ReadInt("Counter step (1): ", ref ra.State.NameCounterStep);
+				Utils.ReadInt("Number length with zero padding (6): ", ref ra.State.PadZeroes);
+				Console.WriteLine("Sort options: no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5. ");
+				Utils.ReadIntIn("Option (4): ", ref sort, new int[] { 0, 1, 2, 3, 4, 5 });
+			}
+			else
+			{
+				ra.ChangeRoot(ra.InArgs.GetFirstValue("-src"));
+				ra.State.DestinationDir = ra.InArgs.GetFirstValue("-dest");
+				if (ra.InArgs.ContainsKey("-sp")) ra.State.SearchPattern = ra.InArgs.GetFirstValue("-sp");
+				if (ra.InArgs.ContainsKey("-prf")) ra.State.Prefix = ra.InArgs.GetFirstValue("-prf");
+				if (ra.InArgs.ContainsKey("-ic")) ra.State.NameCounter = int.Parse(ra.InArgs.GetFirstValue("-ic"));
+				if (ra.InArgs.ContainsKey("-step")) ra.State.NameCounterStep = int.Parse(ra.InArgs.GetFirstValue("-step"));
+				if (ra.InArgs.ContainsKey("-zpad")) ra.State.PadZeroes = int.Parse(ra.InArgs.GetFirstValue("-zpad"));
+				if (ra.InArgs.ContainsKey("-sort")) ra.State.PadZeroes = int.Parse(ra.InArgs.GetFirstValue("-sort"));
+			}
+
 			ra.State.Sort = (SortType)sort;
-
-			var useexisting = false;
-			if (ra.State.Files != null && ra.State.Files.Length > 0)
-			{
-				string.Format(
-					"There are {0} files from a previous subprogram run. {1}Frst of the old files: {2} ",
-					ra.State.Files.Length, Environment.NewLine, ra.State.Files[0]).PrintLine();
-				useexisting = Utils.ReadWord("Use them? (y/*) ", "y");
-			}
-
-			if (!useexisting) ra.State.Files = ra.RootDir.GetFiles(ra.State.SearchPattern, SearchOption.TopDirectoryOnly);
-			else if (Utils.ReadWord(string.Format("Change the root dir ({0}) ? (y/*)", ra.RootDir.FullName), "y"))
-			{
-				var newroot = string.Empty;
-				Utils.ReadString("Enter new root dir: ", ref newroot, true);
-				ra.ChangeRoot(newroot);
-			}
-
+			ra.State.Files = ra.RootDir.GetFiles(ra.State.SearchPattern, SearchOption.TopDirectoryOnly);
 			ra.State.SortFiles(ra.State.Sort);
 
 			string.Format("There are {0} matches.", ra.State.Files.Length).PrintLine();
-			ra.Trace = Utils.ReadWord("Trace first? (y/*): ", "y");
+
+			if (interactive) ra.Trace = Utils.ReadWord("Trace first? (y/*): ", "y");
 
 			if (ra.Trace)
 			{
@@ -59,7 +66,7 @@ namespace Utils.Files
 				}
 			}
 
-			if (Utils.ReadWord("Rename all? (y/*): ", "y"))
+			if (!interactive || Utils.ReadWord("Rename all? (y/*): ", "y"))
 			{
 				var FI = new List<FileInfo>();
 				foreach (var f in ra.State.Files)

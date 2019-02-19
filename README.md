@@ -72,8 +72,24 @@ files -p ext -ni -sp *.png -ext jpg
    Creates a file with paths (log), which can be used to move files (restore).
 
 ### move
-   Moves the matching files from the current dir as DestinationDir/Prefix +
-   Counter. Can be used as rename.
+   Moves the matching files to DestinationDir/Prefix + Counter. Can be used as
+   rename.
+   Args:
+
+    not interactive (-ni)
+    source (-src)
+    destination dir (-dest)
+    prefix (-prf)
+    indexing counter (-ic)
+    ic step (-step)
+    index length with zero padding (-zpad)
+    sort options (-sort) 
+         0 - no 
+         1 - asc name
+         2 - desc name 
+         3 - randomize 
+         4 - asc created date time (default)
+         5 - desc created date time
 
 ### pad
    Adds leading zeros to the numbers in the file names.
@@ -98,3 +114,19 @@ files -p ext -ni -sp *.png -ext jpg
 	prefix the taken files with (-prf)
 	take count (-take)
 	move [default is copy mode] (-move)
+
+### traverse 
+   Traverses all sub-folders of a given root and launches a process with the provided args.
+   If specified replaces a template string in the args with the current folder full path or name.   
+   Args: 
+ 
+    root (-root)
+    program to call (-proc)
+    program args (-pargs) Put in quotes and add a single space before the pargs string.
+    current dir full path as arg name (-cdf)
+    current dir as arg (-cd)
+    Example:
+	   Renames all files by prefixing them with their folder name.
+       files -p traverse -ni -cdf $$ -cd $ -root <path> -proc <files>
+       -pargs " -p move -ni -zpad 3 -src $$ -dest $$ -prf $-"
+       Note the space before the -p move!
