@@ -117,7 +117,7 @@ namespace Utils.Files
 				if (updPos > length) throw new ArgumentOutOfRangeException("offset", "The position greater than the length.");
 				break;
 				case SeekOrigin.End:
-				updPos = length - offset;
+				updPos = length + offset;
 				if (updPos < 0) throw new ArgumentOutOfRangeException("offset", "The position is negative.");
 				break;
 				default: throw new ArgumentException();
