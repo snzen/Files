@@ -2,6 +2,8 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/xn4k826bcvg3niaj?svg=true)](https://ci.appveyor.com/project/arsuq/files)
 
++ [.NET Core 2.2 builds](https://ci.appveyor.com/api/projects/arsuq/Files/artifacts/allCoreBulds.zip)
+
 Put files in a PATH folder and launch from anywhere.
 Some utils support changing the source dir, but the default is the current location.
 
