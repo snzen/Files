@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v2.2": {},
     ".NETCoreApp,Version=v2.2/win-x64": {
-      "files/1.0.0": {
+      "files/1.1.0": {
         "runtime": {
           "files.dll": {}
         }
@@ -15,7 +15,7 @@
     }
   },
   "libraries": {
-    "files/1.0.0": {
+    "files/1.1.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
