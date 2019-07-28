@@ -29,20 +29,23 @@ namespace Utils.Files
 			}
 
 			var d = new DirectoryInfo(src);
-			var All = new List<List<FileInfo>>();
+			var All = new List<FileInfo>();
 			var searchOpt = SearchOption.AllDirectories;
 
 			try
 			{
-				foreach (var sd in d.EnumerateDirectories("*", searchOpt).Union(new DirectoryInfo[] { d }))
+				var D = d.EnumerateDirectories("*", searchOpt).GetEnumerator();
+
+				foreach (var file in d.EnumerateFiles(ra.State.SearchPattern, SearchOption.TopDirectoryOnly))
+					All.Add(file);
+
+				while (true)
 					try
 					{
-						var L = new List<FileInfo>();
+						if (!D.MoveNext()) break;
 
-						foreach (var file in sd.EnumerateFiles(ra.State.SearchPattern, SearchOption.TopDirectoryOnly))
-							L.Add(file);
-
-						All.Add(L);
+						foreach (var file in D.Current.EnumerateFiles(ra.State.SearchPattern, SearchOption.TopDirectoryOnly))
+							All.Add(file);
 					}
 					catch (Exception ex)
 					{
@@ -54,17 +57,13 @@ namespace Utils.Files
 				ex.Message.PrintLine(ConsoleColor.Red);
 			}
 
-			string.Format("There are {0} matches:", All.Sum(x => x.Count)).PrintLine();
+			Console.WriteLine();
+			string.Format("There are {0} matches:", All.Count).PrintLine();
+			Console.WriteLine();
 
-			foreach (var FI in All)
-				foreach (var f in FI)
-				{
-					if (f.FullName == ra.Me) continue;
+			foreach (var f in All) Console.WriteLine(f.FullName);
 
-					Console.WriteLine(f.FullName);
-				}
-
-			Console.WriteLine("Done");
+			Console.WriteLine();
 
 			return 0;
 		}
