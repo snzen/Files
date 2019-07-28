@@ -7,6 +7,14 @@
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
+    <Authors>Arsuq</Authors>
+    <Company>Arsuq</Company>
+    <Description>File utils</Description>
+    <Copyright>Arsuq</Copyright>
+    <PackageProjectUrl>https://github.com/arsuq/Files.git</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

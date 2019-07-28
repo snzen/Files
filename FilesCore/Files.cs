@@ -11,6 +11,10 @@ namespace Utils.Files
 
 		public static int Run(string[] args)
 		{
+			$"File utils v1.1".PrintHeader();
+			Console.WriteLine();
+			Console.WriteLine();
+
 			var P = GetPrograms();
 			var pMap = new Dictionary<string, IUtil>();
 			var inArgs = new ArgsParser(args);
