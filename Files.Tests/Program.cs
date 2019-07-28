@@ -6,9 +6,9 @@ namespace Test
 	{
 		static void Main(string[] args)
 		{
-			var runner = new TestSurface.Runner();
+			if (args.Length < 1) args = new string[] { "+all"};
 
-			runner.Run(args);
+			new TestSurface.SurfaceLauncher().Start(args);
 
 			Console.ReadLine();
 		}

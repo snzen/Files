@@ -10,12 +10,13 @@ namespace Test
 	class StreamReductorMultiCase : ITestSurface
 	{
 		public string Info => "Test the Files.StreamReductor";
+		public string Tags => "stream";
 		public string FailureMessage { get; set; }
 		public bool? Passed { get; set; }
 		public bool IsComplete { get; set; }
 		public bool IndependentLaunchOnly => false;
 
-		public async Task Run(IDictionary<string, List<string>> args)
+		public async Task Start(IDictionary<string, List<string>> args)
 		{
 			NormalReduction();
 			if (!Passed.HasValue || Passed.Value) NonSeekableMemoryStream();
