@@ -2,12 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Platforms>AnyCPU;x64;win-x64;linux-arm</Platforms>
+    <Platforms>AnyCPU;x64;win-x64;win-arm64;linux-arm</Platforms>
     <AssemblyName>files</AssemblyName>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\filesstd\FilesStd.csproj" />
+    <Folder Include="Release\" />
   </ItemGroup>
+
 
 </Project>

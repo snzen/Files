@@ -2,24 +2,17 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/xn4k826bcvg3niaj?svg=true)](https://ci.appveyor.com/project/arsuq/files)
 
-+ [.NET Framework 4.7.1 build](https://ci.appveyor.com/api/projects/arsuq/Files/artifacts/filesWin.zip)
-+ [.NET Core 2.2 build](https://ci.appveyor.com/api/projects/arsuq/Files/artifacts/filesCore.zip)
-
-Put the dlls in a PATH folder and launch from anywhere.
+Put files in a PATH folder and launch from anywhere.
 Some utils support changing the source dir, but the default is the current location.
 
 Launch a specific subprogram with the -p switch:
 
-.NET Framework 4.7.1
-
 ```
- files -p take
+files -p take
 ```
-
-.NET Core 2.2
-
+or
 ```
-dotnet <path-to-filles>/files.dll -p move
+dotnet <path-to-filles>/files.dll -p take
 ```
 
 
@@ -97,6 +90,14 @@ files -p ext -ni -sp *.png -ext jpg
 ### rename
    Renames the matching files from the current folder with the names from a text
    file.
+
+### search
+   Search for files recursively.
+   Args:
+
+    not interactive (-ni)
+    source (-src)
+    search pattern (-sp)
 
 ### take
    Copies or moves n random files from the current folder into a destination folder.    
