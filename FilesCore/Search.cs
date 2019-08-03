@@ -10,11 +10,12 @@ namespace Utils.Files
 		public string Name => "search";
 		public string Info =>
 			"Search for files recursively." + Environment.NewLine +
-			"Args: not interactive (-ni), source (-src), search pattern (-sp)";
+			"Args: not interactive (-ni), source (-src), search pattern (-sp), report errors (-err)";
 
 		public int Run(RunArgs ra)
 		{
-			bool interactive = !ra.InArgs.ContainsKey("-ni");
+			var interactive = !ra.InArgs.ContainsKey("-ni");
+			var err = ra.InArgs.ContainsKey("-err");
 			string src = ra.RootDir.FullName;
 
 			if (interactive)
@@ -49,12 +50,12 @@ namespace Utils.Files
 					}
 					catch (Exception ex)
 					{
-						ex.Message.PrintLine(ConsoleColor.Red);
+						if (err) ex.Message.PrintLine(ConsoleColor.Red);
 					}
 			}
 			catch (Exception ex)
 			{
-				ex.Message.PrintLine(ConsoleColor.Red);
+				if (err) ex.Message.PrintLine(ConsoleColor.Red);
 			}
 
 			Console.WriteLine();

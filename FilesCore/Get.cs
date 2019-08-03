@@ -14,9 +14,10 @@ namespace Utils.Files
 	{
 		public string Name => "get";
 		public string Info =>
-			"Downloads resources listed in a map file with each link on a separate line. " + Environment.NewLine +
-			"Args: not interactive (-ni), links file (-f), base url (-base), destination dir (-dest), max req/sec [5.0] (-rps) " +
-			"from file row [0] (-from), to file row [last] (-to)";
+			"Downloads resources listed in a file with each link on a separate line. " + Environment.NewLine +
+			"Args: not interactive (-ni), links file (-f), base url (-base), one link (-url) [no -f, no -base] " +
+			"destination dir (-dest) [default is current], max req/sec [5.0] (-rps) from file row [0] (-from)," +
+			"to file row [last] (-to)";
 
 
 		public int Run(RunArgs ra)
@@ -27,30 +28,38 @@ namespace Utils.Files
 			var reqPerSec = 5.0;
 			var fromIdx = 0;
 			var toIdx = -1;
+			var url = string.Empty;
+			ra.State.DestinationDir = ra.RootDir.FullName;
 
 			if (interactive)
 			{
-				Utils.ReadString("links file: ", ref linksFile, true);
-				Utils.ReadString("destination dir: ", ref ra.State.DestinationDir, true);
-				Utils.ReadString("base url: ", ref baseUrl);
-				Utils.ReadDouble("req/sec: ", ref reqPerSec);
-				Utils.ReadInt("from row: ", ref fromIdx);
-				Utils.ReadInt("to row: ", ref toIdx);
+				Utils.ReadString("destination dir: ", ref ra.State.DestinationDir);
+				Utils.ReadString("url: ", ref url);
+
+				if (string.IsNullOrWhiteSpace(url))
+				{
+					Utils.ReadString("base url: ", ref baseUrl);
+					Utils.ReadString("links file: ", ref linksFile, true);
+					Utils.ReadDouble("req/sec: ", ref reqPerSec);
+					Utils.ReadInt("from row: ", ref fromIdx);
+					Utils.ReadInt("to row: ", ref toIdx);
+				}
 			}
 			else
 			{
-				linksFile = ra.InArgs.GetFirstValue("-f");
-				baseUrl = ra.InArgs.GetFirstValue("-base");
-				ra.State.DestinationDir = ra.InArgs.GetFirstValue("-dest");
-				if (ra.InArgs.ContainsKey("-rps"))
-					reqPerSec = double.Parse(ra.InArgs.GetFirstValue("-rps"));
-				if (ra.InArgs.ContainsKey("-from"))
-					fromIdx = int.Parse(ra.InArgs.GetFirstValue("-from"));
-				if (ra.InArgs.ContainsKey("-to"))
-					toIdx = int.Parse(ra.InArgs.GetFirstValue("-to"));
+				if (ra.InArgs.ContainsKey("-f")) linksFile = ra.InArgs.GetFirstValue("-f");
+				if (ra.InArgs.ContainsKey("-base")) baseUrl = ra.InArgs.GetFirstValue("-base");
+				if (ra.InArgs.ContainsKey("-url")) url = ra.InArgs.GetFirstValue("-url");
+				if (ra.InArgs.ContainsKey("-dest")) ra.State.DestinationDir = ra.InArgs.GetFirstValue("-dest");
+				if (ra.InArgs.ContainsKey("-rps")) reqPerSec = double.Parse(ra.InArgs.GetFirstValue("-rps"));
+				if (ra.InArgs.ContainsKey("-from")) fromIdx = int.Parse(ra.InArgs.GetFirstValue("-from"));
+				if (ra.InArgs.ContainsKey("-to")) toIdx = int.Parse(ra.InArgs.GetFirstValue("-to"));
 			}
 
-			var links = File.ReadAllLines(linksFile);
+			string[] links = null;
+
+			if (!string.IsNullOrWhiteSpace(url)) links = new string[] { url };
+			else links = File.ReadAllLines(linksFile);
 			if (toIdx < 0) toIdx = links.Length;
 
 			if (fromIdx > 0 && fromIdx > links.Length) throw new ArgumentOutOfRangeException("from");
@@ -77,15 +86,28 @@ namespace Utils.Files
 
 					new Task(async (o) =>
 					{
+						var idx = (int)o;
+						Uri uri = null;
+						var fn = string.Empty;
+
 						try
 						{
 							using (var webClient = new HttpClient())
 							{
-								var idx = (int)o;
 								var link = links[idx];
-								var url = string.Format("{0}/{1}", baseUrl, link);
-								var fn = Path.Combine(ra.State.DestinationDir, link);
-								var bytes = await webClient.GetByteArrayAsync(url);
+
+								if (!string.IsNullOrEmpty(baseUrl))
+								{
+									uri = new Uri(string.Format("{0}/{1}", baseUrl, link));
+									fn = Path.Combine(ra.State.DestinationDir, link);
+								}
+								else
+								{
+									uri = new Uri(link);
+									fn = Path.Combine(ra.State.DestinationDir, uri.Segments[uri.Segments.Length - 1]);
+								}
+
+								var bytes = await webClient.GetByteArrayAsync(uri);
 								using (var fs = new FileStream(
 									fn, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, bytes.Length, true))
 									await fs.WriteAsync(bytes, 0, bytes.Length);
@@ -95,7 +117,7 @@ namespace Utils.Files
 						}
 						catch (Exception ex)
 						{
-							$"@ link {links[i]}".PrintSysError(true);
+							$"@ link {links[idx]}".PrintSysError(true);
 							ex.Message.PrintSysError(true);
 						}
 						finally
