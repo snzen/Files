@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace Utils.Files
 {
@@ -19,18 +18,26 @@ namespace Utils.Files
 			int sort = 4;
 			string src = null;
 			ra.Trace = false;
+			ra.State.NameCounter = int.MinValue;
 
 			if (interactive)
 			{
 				Utils.ReadString("Source dir (current): ", ref src);
+
+				if (!string.IsNullOrEmpty(src)) ra.ChangeRoot(src);
+
 				Utils.ReadString("Destination dir: ", ref ra.State.DestinationDir, true);
 				Utils.ReadString("Search pattern (*.*): ", ref ra.State.SearchPattern);
 				Utils.ReadString("Prefix: ", ref ra.State.Prefix);
-				Utils.ReadInt("Counter (0): ", ref ra.State.NameCounter);
-				Utils.ReadInt("Counter step (1): ", ref ra.State.NameCounterStep);
-				Utils.ReadInt("Number length with zero padding (6): ", ref ra.State.PadZeroes);
-				Console.WriteLine("Sort options: no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5. ");
-				Utils.ReadIntIn("Option (4): ", ref sort, new int[] { 0, 1, 2, 3, 4, 5 });
+				Utils.ReadInt("Counter start value (default is prefix only): ", ref ra.State.NameCounter);
+
+				if (ra.State.NameCounter > int.MinValue)
+				{
+					Utils.ReadInt("Counter step (1): ", ref ra.State.NameCounterStep);
+					Utils.ReadInt("Number length with zero padding (6): ", ref ra.State.PadZeroes);
+					Console.WriteLine("Sort options: no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5. ");
+					Utils.ReadIntIn("Option (4): ", ref sort, new int[] { 0, 1, 2, 3, 4, 5 });
+				}
 			}
 			else
 			{
@@ -52,16 +59,23 @@ namespace Utils.Files
 
 			if (interactive) ra.Trace = Utils.ReadWord("Trace first? (y/*): ", "y");
 
+			string padded, newpath, newname;
+
 			if (ra.Trace)
 			{
 				var tcounter = ra.State.NameCounter;
 				foreach (var f in ra.State.Files)
 				{
 					if (f.FullName == ra.Me) continue;
-					tcounter += ra.State.NameCounterStep;
-					var padded = PadNumbers.PadZeroes(tcounter.ToString(), ra.State.PadZeroes);
-					var newname = string.Format("{0}{1}{2}", ra.State.Prefix, padded, f.Extension);
-					var newpath = Path.Combine(ra.State.DestinationDir, newname);
+					if (ra.State.NameCounter > int.MinValue)
+					{
+						tcounter += ra.State.NameCounterStep;
+						padded = PadNumbers.PadZeroes(tcounter.ToString(), ra.State.PadZeroes);
+						newname = string.Format("{0}{1}{2}", ra.State.Prefix, padded, f.Extension);
+					}
+					else newname = ra.State.Prefix + f.Name;
+
+					newpath = Path.Combine(ra.State.DestinationDir, newname);
 					string.Format(f.Name + " --> " + newpath).PrintLine(ConsoleColor.Yellow);
 				}
 			}
@@ -72,10 +86,16 @@ namespace Utils.Files
 				foreach (var f in ra.State.Files)
 				{
 					if (f.FullName == ra.Me) continue;
-					ra.State.IncrementCounter();
-					var padded = PadNumbers.PadZeroes(ra.State.NameCounter.ToString(), ra.State.PadZeroes);
-					var newname = string.Format("{0}{1}{2}", ra.State.Prefix, padded, f.Extension);
-					var newpath = Path.Combine(ra.State.DestinationDir, newname);
+					if (ra.State.NameCounter > int.MinValue)
+					{
+						ra.State.IncrementCounter();
+						padded = PadNumbers.PadZeroes(ra.State.NameCounter.ToString(), ra.State.PadZeroes);
+						newname = string.Format("{0}{1}{2}", ra.State.Prefix, padded, f.Extension);
+					}
+					else newname = ra.State.Prefix + f.Name;
+
+					newpath = Path.Combine(ra.State.DestinationDir, newname);
+
 					File.Move(f.FullName, newpath);
 					FI.Add(new FileInfo(newpath));
 				}
@@ -85,16 +105,6 @@ namespace Utils.Files
 			else Console.WriteLine("Aborting move.");
 
 			return 0;
-		}
-
-		static void PadZeroes(ref string filename, RunArgs ra)
-		{
-			Match m = Regex.Match(filename, @"\d+");
-			if (m.Success)
-			{
-				var padded = m.Value.PadLeft(ra.State.PadZeroes, '0');
-				filename = filename.Replace(m.Value, padded);
-			}
 		}
 	}
 }
