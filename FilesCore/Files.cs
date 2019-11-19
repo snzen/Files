@@ -11,7 +11,7 @@ namespace Utils.Files
 
 		public static int Run(string[] args)
 		{
-			$"File utils v1.1".PrintHeader();
+			$"File utils v1.2".PrintHeader();
 			Console.WriteLine();
 			Console.WriteLine();
 

@@ -62,8 +62,24 @@ files -p ext -ni -sp *.png -ext jpg
 	append [by default prepends] (-append)
 	override [by default inserts] (-ovr)
 
+### linefix
+   Includes text at the beginning or at the end of each line in a text file
+   Args:
+
+    not interactive (-ni)
+    text file (-tf)
+    text (-text)
+    output file (-out)
+    append [by default prepends] (-append)
+
 ### logrestore
    Creates a file with paths (log), which can be used to move files (restore).
+
+### lrand
+   Randomizes the lines in a text file. Note that lrand will override the original file!
+   Args: 
+ 
+   not interactive (-ni), text file (-tf)
 
 ### move
    Moves the matching files to DestinationDir/Prefix + Counter. Can be used as
