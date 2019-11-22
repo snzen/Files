@@ -21,6 +21,18 @@ All subprograms start in interactive mode, unless the -ni switch is present and 
 ```
 files -p ext -ni -sp *.png -ext jpg
 ```
+
+### colpick 
+   Picks columns by index from a file and copies them into a new file.
+   Can also be used to rearrange the columns in a csv file.
+   Args:
+
+    not interactive (-ni)
+    file (-in)
+    output file (-out)
+    separator (-sep)
+    columns (-cols) ex: -cols 1, 4
+
 ### fdelete
    Deletes files listed in a text file. Each file path must be on a separate line.
    Args:
