@@ -22,6 +22,25 @@ All subprograms start in interactive mode, unless the -ni switch is present and 
 files -p ext -ni -sp *.png -ext jpg
 ```
 
+### colpick 
+   Picks columns by index from a file and copies them into a new file.
+   Can also be used to rearrange the columns in a csv file.
+   Args:
+
+    not interactive (-ni)
+    file (-in)
+    output file (-out)
+    separator (-sep)
+    columns (-cols) ex: -cols 1, 4
+
+### fdelete
+   Deletes files listed in a text file. Each file path must be on a separate line.
+   Args:
+
+    not interactive (-ni)
+    map file (-tf)
+    quiet (do not report missing) (-q)
+
 ### duplicates
    Detects file duplicates in one or more folders by comparing sizes, names or data hashes.
    There are extension and size filters as well as option for partial hashing
@@ -74,6 +93,15 @@ files -p ext -ni -sp *.png -ext jpg
 
 ### logrestore
    Creates a file with paths (log), which can be used to move files (restore).
+
+### lhaving
+   Takes matching lines from a text file and saves them to another.
+   Args:
+
+    not interactive (-ni)
+    text file (-tf)
+    search text (-text) 
+    output file (-out)
 
 ### lrand
    Randomizes the lines in a text file. Note that lrand will override the original file!
