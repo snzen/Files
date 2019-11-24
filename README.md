@@ -54,6 +54,23 @@ files -p ext -ni -sp *.png -ext jpg
 	source dir [default is current] (-src)
 	search pattern [*.*] (-sp), extension (-ext)
 
+### foreach
+   Enumerates all matching files in a given root and launches a process with the
+   provided args.
+   Args: 
+  
+    not interactive (-ni)
+    concurrent instances [1] (-ci)
+    root [current] (-root)
+    file search (-sp) [*.*]
+    recursive (-rec) [y/n]
+    program to call [files] (-proc)
+    program args (-pargs) [put in quotes and add a single space before the pargs string] 
+    current dir full path as arg name (-cdf)
+    current dir as arg (-cd)
+     Example: files -p foreach -ni -cdf $$ -cd $ -root <path> -proc <files>
+    -pargs " -p colpick -ni  -in $$ -out $$ -cols 0,4,1 "
+
 ### get 
    Downloads resources listed in a map file with each link on a separate line.  
    Args: 

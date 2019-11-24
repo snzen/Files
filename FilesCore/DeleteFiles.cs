@@ -43,9 +43,9 @@ namespace Utils.Files
 						File.Delete(line);
 						counter++;
 					}
-					else if (!quiet) Console.WriteLine($"File not found: {line}");
+					else if (!quiet) $"File not found: {line}".PrintLine();
 
-			Console.WriteLine($"Done, {counter} files were deleted.");
+			$"Done, {counter} files were deleted.".PrintLine();
 
 			return 0;
 		}

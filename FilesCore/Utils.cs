@@ -23,7 +23,6 @@ namespace Utils.Files
 			} while (loop);
 		}
 
-
 		public static bool PickOption(this string msg, ref string target, bool loop, params string[] options)
 		{
 			if (options == null || options.Length < 1) throw new ArgumentNullException("options");
@@ -97,22 +96,18 @@ namespace Utils.Files
 
 		public static void Print(this string msg, ConsoleColor? fc = null, ConsoleColor? bc = null, bool newLine = false)
 		{
-			bool acq = false;
-			sync.Enter(ref acq);
-
-			if (acq)
-			{
-				var cfc = Console.ForegroundColor;
-				var cbc = Console.BackgroundColor;
-				if (fc.HasValue) Console.ForegroundColor = fc.Value;
-				if (bc.HasValue) Console.BackgroundColor = bc.Value;
-				Console.Write(msg);
-				Console.ForegroundColor = cfc;
-				Console.BackgroundColor = cbc;
-				if (newLine) Console.WriteLine();
-
-				sync.Exit();
-			}
+			if (!Volatile.Read(ref SuppressPrint))
+				lock (sync)
+				{
+					var cfc = Console.ForegroundColor;
+					var cbc = Console.BackgroundColor;
+					if (fc.HasValue) Console.ForegroundColor = fc.Value;
+					if (bc.HasValue) Console.BackgroundColor = bc.Value;
+					Console.Write(msg);
+					Console.ForegroundColor = cfc;
+					Console.BackgroundColor = cbc;
+					if (newLine) Console.WriteLine();
+				}
 		}
 
 		public static void PrintLine(this string msg, ConsoleColor? fc = null, ConsoleColor? bc = null) =>
@@ -230,7 +225,9 @@ namespace Utils.Files
 				}
 		}
 
+		public static bool SuppressPrint = false;
+
 		static readonly string[] WSEP = new string[] { Environment.NewLine };
-		static SpinLock sync = new SpinLock();
+		static object sync = new object();
 	}
 }

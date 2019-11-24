@@ -42,7 +42,7 @@ namespace Utils.Files
 			File.Delete(tf);
 			File.WriteAllLines(tf, allLines);
 
-			Console.WriteLine("Done.");
+			"Done.".PrintLine();
 
 			return 0;
 		}

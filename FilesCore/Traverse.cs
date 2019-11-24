@@ -11,7 +11,7 @@ namespace Utils.Files
 			"Traverses all sub-folders of a given root and launches a process with the provided args. If specified replaces a template string" +
 			"in the args with the current folder full path or name." + Environment.NewLine +
 			"Args: root (-root), program to call (-proc), program args (-pargs) Put in quotes and add a single space before the pargs string. " +
-			"current dir full path as arg name (-cdf),  current dir as arg (-cd)" +Environment.NewLine+
+			"current dir full path as arg name (-cdf),  current dir as arg (-cd)" + Environment.NewLine +
 			"Example: files -p traverse -ni -cdf $$ -cd $ -root <path> -proc <files> -pargs \" -p move -ni -zpad 3 -src $$ -dest $$ -prf $-\"";
 
 
@@ -54,10 +54,8 @@ namespace Utils.Files
 
 					$"Starting {prog} {pargs}".PrintLine();
 
-					var process = Process.Start(proc);
-
-					process.Start();
-					process.WaitForExit();
+					using (var process = Process.Start(proc))
+						process.WaitForExit();
 				}
 				catch (Exception ex)
 				{

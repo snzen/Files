@@ -58,13 +58,11 @@ namespace Utils.Files
 				if (err) ex.Message.PrintLine(ConsoleColor.Red);
 			}
 
-			Console.WriteLine();
-			string.Format("There are {0} matches:", All.Count).PrintLine();
-			Console.WriteLine();
+			$"{Environment.NewLine}There are {All.Count} matches: {Environment.NewLine}".PrintLine();
 
-			foreach (var f in All) Console.WriteLine(f.FullName);
+			foreach (var f in All) f.FullName.PrintLine();
 
-			Console.WriteLine();
+			"".PrintLine();
 
 			return 0;
 		}

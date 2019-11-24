@@ -20,7 +20,7 @@ namespace Utils.Files
 			Utils.ReadInt("counter (0) : ", ref ra.State.NameCounter);
 			Utils.ReadInt("counter step (1) : ", ref ra.State.NameCounterStep);
 			Utils.ReadInt("number length with zero padding (6) : ", ref ra.State.PadZeroes);
-			Console.WriteLine("sort options: no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5. ");
+			"sort options: no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5. ".PrintLine();
 			int sort = 0;
 			Utils.ReadIntIn("sort first (no) : ", ref sort, new int[] { 0, 1, 2, 3, 4, 5 });
 			ra.State.Sort = (SortType)sort;
@@ -92,9 +92,9 @@ namespace Utils.Files
 					i++;
 				}
 				ra.State.Files = FI.ToArray();
-				Console.WriteLine("Done - {0} files renamed.", ra.State.Files.Length);
+				$"Done - {ra.State.Files.Length} files renamed.".PrintLine();
 			}
-			else Console.WriteLine("Aborting rename.");
+			else "Aborting rename.".PrintLine();
 
 			return 0;
 		}

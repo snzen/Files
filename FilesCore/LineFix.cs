@@ -59,7 +59,7 @@ namespace Utils.Files
 
 			File.WriteAllText(outfile, outLines.ToString());
 
-			Console.WriteLine("Done.");
+			"Done.".PrintLine();
 
 			return 0;
 		}

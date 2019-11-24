@@ -35,7 +35,7 @@ namespace Utils.Files
 				{
 					Utils.ReadInt("Counter step (1): ", ref ra.State.NameCounterStep);
 					Utils.ReadInt("Number length with zero padding (6): ", ref ra.State.PadZeroes);
-					Console.WriteLine("Sort options: no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5. ");
+					"Sort options: no-0, asc name-1, desc name-2, randomize-3,  asc createdate-4, desc createdate-5. ".PrintLine();
 					Utils.ReadIntIn("Option (4): ", ref sort, new int[] { 0, 1, 2, 3, 4, 5 });
 				}
 			}
@@ -100,9 +100,9 @@ namespace Utils.Files
 					FI.Add(new FileInfo(newpath));
 				}
 				ra.State.Files = FI.ToArray();
-				Console.WriteLine("Done - {0} files renamed.", ra.State.Files.Length);
+				$"Done - {ra.State.Files.Length} files renamed.".PrintLine();
 			}
-			else Console.WriteLine("Aborting move.");
+			else "Aborting move.".PrintLine();
 
 			return 0;
 		}

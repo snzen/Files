@@ -53,9 +53,9 @@ namespace Utils.Files
 					var newpath = Path.ChangeExtension(f.FullName, ra.State.Ext);
 					File.Move(f.FullName, newpath);
 				}
-				Console.WriteLine("Done - {0} files renamed.", ra.State.Files.Length);
+				$"Done - {ra.State.Files.Length} files renamed.".PrintLine();
 			}
-			else Console.WriteLine("Aborting ext.");
+			else "Aborting ext.".PrintLine();
 
 			return 0;
 		}

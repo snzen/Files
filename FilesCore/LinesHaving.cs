@@ -52,7 +52,7 @@ namespace Utils.Files
 				}
 
 			File.WriteAllText(outfile, outLines.ToString());
-			Console.WriteLine($"Done, {counter} matching lines.");
+			$"Done, {counter} matching lines.".PrintLine();
 
 			return 0;
 		}

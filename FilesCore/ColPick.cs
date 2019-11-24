@@ -10,7 +10,7 @@ namespace Utils.Files
 		public string Name => "colpick";
 		public string Info => "Picks columns by index from a file and copies them into a new file." + Environment.NewLine +
 			"Can also be used to rearrange the columns in a csv file." + Environment.NewLine +
-			"Args: not interactive (-ni), file (-in), output file (-out), separator (-sep), columns (-cols) ex: -cols 1, 4 ";
+			"Args: not interactive (-ni), file (-in), output file (-out), separator (-sep), columns (-cols) [last arg] ex: -cols 1, 4 ";
 
 		public int Run(RunArgs ra)
 		{
@@ -44,7 +44,10 @@ namespace Utils.Files
 				else throw new ArgumentNullException("-out");
 
 				if (ra.InArgs.ContainsKey("-cols"))
-					C = ra.InArgs["-cols"].ToArray();
+				{
+					var x = ra.InArgs["-cols"];
+					C = x.Count < 2 ? x[0].Split(COMMA) : x.ToArray();
+				}
 				else throw new ArgumentNullException("-cols");
 
 				if (ra.InArgs.ContainsKey("-sep")) sep = ra.InArgs.GetFirstValue("-sep");
@@ -78,7 +81,7 @@ namespace Utils.Files
 				}
 
 			File.WriteAllText(outf, outsb.ToString());
-			Console.WriteLine($"Done, {counter}/{L.Length} lines were copied.");
+			$"Done, {counter}/{L.Length} lines were copied.".PrintLine();
 
 			return 0;
 		}

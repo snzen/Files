@@ -129,8 +129,7 @@ namespace Utils.Files
 			var counter = 0;
 			var hashDictSpin = new SpinLock();
 
-			Console.WriteLine();
-			$"Total files checked: {totalFilesChecked}".PrintLine();
+			$"{Environment.NewLine}Total files checked: {totalFilesChecked}".PrintLine();
 			Console.CursorVisible = false;
 			var cursorTop = Console.CursorTop;
 
@@ -170,7 +169,7 @@ namespace Utils.Files
 							}
 							catch (Exception ex)
 							{
-								Console.WriteLine(ex.Message);
+								ex.Message.PrintSysError();
 								return;
 							}
 						});
@@ -180,7 +179,7 @@ namespace Utils.Files
 							for (int left = 0; left < Console.WindowWidth; left++)
 							{
 								Console.SetCursorPosition(left, top);
-								Console.Write(' ');
+								" ".Print();
 							}
 					}
 					else

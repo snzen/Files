@@ -73,18 +73,17 @@ namespace Utils.Files
 			{
 				if (interactive && Utils.ReadWord("Trace first? (y/*): ", "y"))
 				{
-					Console.WriteLine();
-					"Files:".PrintLine();
+					$"{Environment.NewLine}Files:".PrintLine();
 					foreach (var f in F) $"{f.FullName}".PrintLine(ConsoleColor.DarkYellow);
-					Console.WriteLine();
-					"Ignored files:".PrintLine();
+					$"{Environment.NewLine}Ignored files:".PrintLine();
 					foreach (var f in I) $"{f.FullName}".PrintLine(ConsoleColor.DarkRed);
 				}
 
-				Console.WriteLine();
+				"".PrintLine();
 
 				if (interactive && !Utils.ReadWord("Edit? (y/*): ", "y")) return -1;
-				Console.WriteLine();
+
+				"".PrintLine();
 
 				var c = 0;
 
@@ -101,9 +100,7 @@ namespace Utils.Files
 					}
 			}
 
-			Console.WriteLine();
-			"Done".PrintLine(ConsoleColor.Yellow);
-			Console.WriteLine();
+			$"{Environment.NewLine}Done. {Environment.NewLine}".PrintLine(ConsoleColor.Yellow);
 
 			return 0;
 		}

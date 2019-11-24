@@ -45,9 +45,9 @@ namespace Utils.Files
 			{
 				PadFiles(ra, FI, true);
 				ra.State.Files = FI.ToArray();
-				Console.WriteLine("Done - {0} files renamed.", ra.State.Files.Length);
+				$"Done - {ra.State.Files.Length} files renamed.".PrintLine();
 			}
-			else Console.WriteLine("Aborting pad.");
+			else "Aborting pad.".PrintLine();
 
 			return 0;
 		}

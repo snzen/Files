@@ -128,9 +128,8 @@ namespace Utils.Files
 				}
 
 			counter.Wait();
-			Console.WriteLine();
 			var dur = DateTime.Now.Subtract(startTime);
-			$"Done [{dur.Hours}h {dur.Minutes}m {dur.Seconds}s].".PrintInfo(true);
+			$"{Environment.NewLine}Done [{dur.Hours}h {dur.Minutes}m {dur.Seconds}s].".PrintInfo(true);
 
 			return 0;
 		}

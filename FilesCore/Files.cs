@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Utils.Files
 {
 	public class Files
 	{
+		public const string GA_NOPRINT = "-noprint";
 		const int INFO_LINE_WIDTH = 65;
 		static RunArgs runArgs = new RunArgs();
 
 		public static int Run(string[] args)
 		{
-			$"File utils v1.2".PrintHeader();
-			Console.WriteLine();
-			Console.WriteLine();
+			if (args.Length < 1) $"File utils v1.2".PrintHeader();
+			else if (Array.Exists(args, (x) => x == GA_NOPRINT)) Volatile.Write(ref Utils.SuppressPrint, true);
+
+			Utils.PrintLine("");
+			Utils.PrintLine("");
 
 			var P = GetPrograms();
 			var pMap = new Dictionary<string, IUtil>();
@@ -34,15 +38,13 @@ namespace Utils.Files
 
 				foreach (var u in pMap)
 				{
-					Console.WriteLine();
-					$" ({u.Value.Name}):".PrintHeader();
-					Console.WriteLine();
+					$"{Environment.NewLine} ({u.Value.Name}): {Environment.NewLine}".PrintHeader();
 					foreach (var line in u.Value.Info.Slice(INFO_LINE_WIDTH))
 						$"   {line}".PrintLine();
 				}
 
 				var a = String.Empty;
-				Console.WriteLine();
+				"".PrintLine();
 
 				while (true)
 				{
