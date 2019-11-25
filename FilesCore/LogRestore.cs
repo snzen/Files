@@ -19,15 +19,25 @@ namespace Utils.Files
 			var mode = "";
 			while (mode != "log" && mode != "restore")
 				Utils.ReadString("mode (log) or (restore): ", ref mode, true);
+
+			var newSrc = string.Empty;
+			Utils.ReadString("Source dir [default is local]: ", ref newSrc);
+
+			if (!string.IsNullOrEmpty(newSrc)) ra.ChangeRoot(newSrc);
+
 			Utils.ReadString("search pattern (*.*): ", ref ra.State.SearchPattern);
 
 			if (mode == "log")
 			{
-				var F = new List<string>();
-				foreach (var f in ra.RootDir.GetFiles(ra.State.SearchPattern, SearchOption.TopDirectoryOnly))
-					F.Add(f.Name);
+				var currentDir = Utils.ReadWord("Recursive? [default is yes] (n/*): ", "n");
+				var justNames = Utils.ReadWord("Log full paths? [default is yes] (n/*): ", "n");
 
-				string.Format("The local dir has {0} matching files.", F.Count).PrintLine();
+				var F = new List<string>();
+				foreach (var f in ra.RootDir.GetFiles(ra.State.SearchPattern,
+					currentDir ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories))
+					F.Add(justNames ? f.Name : f.FullName);
+
+				string.Format("Found {0} matching files.", F.Count).PrintLine();
 				if (F.Count > 0)
 				{
 					if (Utils.ReadWord("See them? (y/*): ", "y"))
@@ -39,105 +49,60 @@ namespace Utils.Files
 					File.WriteAllLines(p, F.ToArray());
 					string.Format("Name file saved as {0}", p).PrintLine();
 				}
+
+				"Done.".PrintLine();
 			}
 			else
 			{
-				var newSrc = string.Empty;
-				Utils.ReadString("Source dir [default is local]: ", ref newSrc);
-				if (!string.IsNullOrEmpty(newSrc)) ra.ChangeRoot(newSrc);
-				Utils.ReadString("Restore dir: ", ref ra.State.DestinationDir, true);
 				var logfilePath = string.Empty;
 				Utils.ReadString("Log file path: ", ref logfilePath, true);
-				var names = File.ReadAllLines(logfilePath);
-				var recursive = Utils.ReadWord("Recursive? (y/*): ", "y");
-				var fullPaths = Utils.ReadWord("Use paths? [default is filenames] (y/*): ", "y");
-				var fullPathCut = string.Empty;
-				if (fullPaths) Utils.ReadString("Full path cut: [Ex: C:\\]: ", ref fullPathCut);
+				var paths = File.ReadAllLines(logfilePath);
+				var recursive = Utils.ReadWord("Recursive search? (y/*): ", "y");
 				var copy = Utils.ReadWord("Copy? [default is move] (y/*): ", "y");
+				var so = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+				var allFiles = Directory.GetFiles(ra.RootDir.FullName, ra.State.SearchPattern, so);
 
-				if (names == null || names.Length < 1)
+				var origMap = new Dictionary<string, string>();
+				var localMap = new Dictionary<string, string>();
+
+				foreach (var path in paths)
 				{
-					"No names found.".PrintLine();
+					var jn = Path.GetFileName(path);
+
+					if (!origMap.ContainsKey(jn))
+						origMap.Add(jn, path);
+					else $"Log file name duplicate {jn}".Print(ConsoleColor.Yellow, null, true);
 				}
-				else
+
+				foreach (var path in allFiles)
 				{
-					var localNames = new HashSet<string>();
-					var map = new Dictionary<string, FileInfo>();
+					var jn = Path.GetFileName(path);
 
-					foreach (var f in ra.RootDir.GetFiles(ra.State.SearchPattern,
-						recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
-					{
-						var key = f.Name;
-						if (fullPaths)
-						{
-							key = f.FullName;
-							if (!string.IsNullOrEmpty(fullPathCut))
-								key = key.Replace(fullPathCut, string.Empty);
-						}
-						localNames.Add(key);
-						if (!map.ContainsKey(key)) map.Add(key, f);
-					}
-
-					string.Format(
-						"{0} names in the log file, {1} in the local directory tree.",
-							names.Length,
-							localNames.Count)
-						.PrintLine();
-
-					var matchings = new List<string>(localNames.Intersect(names));
-
-					if (matchings.Count > 0)
-					{
-						string.Format("The local dir has {0} matching files.", matchings.Count).PrintLine();
-						if (Utils.ReadWord("See the  them? (y/*): ", "y"))
-							foreach (var f in matchings)
-								f.PrintLine(ConsoleColor.Yellow);
-
-						var q = string.Format(
-							"Restore the local dir matching files ({0}) to {1}? (y/*): ",
-							matchings.Count,
-							ra.State.DestinationDir);
-
-						if (Utils.ReadWord(q, "y"))
-						{
-							var existing = new List<string>();
-							foreach (var f in matchings)
-							{
-								var lf = fullPaths ? map[f].FullName : Path.Combine(ra.RootDir.FullName, f);
-								var rf = string.Empty;
-								if (fullPaths)
-								{
-									if (!string.IsNullOrEmpty(fullPathCut))
-										rf = map[f].FullName.Replace(fullPathCut, string.Empty);
-								}
-								else rf = f;
-
-								rf = Path.Combine(ra.State.DestinationDir, rf);
-								if (!File.Exists(rf))
-								{
-									var dir = Path.GetDirectoryName(rf);
-									if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-									if (copy) File.Copy(lf, rf);
-									else File.Move(lf, rf);
-								}
-								else existing.Add(f);
-							}
-							string.Format(
-								"{0} files were moved, {1} were skipped as existing.",
-									matchings.Count - existing.Count,
-									existing.Count)
-								.PrintLine();
-
-							if (existing.Count > 0 && Utils.ReadWord("See the skipped names? (y/*): ", "y"))
-								foreach (var f in existing)
-									f.PrintLine(ConsoleColor.Yellow);
-						}
-						else "Aborting.".PrintLine();
-					}
-					else string.Format(
-							"There are no local files matching the names in {0}.", logfilePath)
-							.PrintLine();
+					if (!localMap.ContainsKey(jn))
+						localMap.Add(jn, path);
+					else $"Local file name duplicate {jn}".Print(ConsoleColor.Yellow, null, true);
 				}
+
+				var list = new List<string>(localMap.Keys.Intersect(origMap.Keys));
+
+				$"{list.Count} files match by name.".PrintLine();
+
+				if (list.Count > 0)
+				{
+					if (Utils.ReadWord("See them? (y/*): ", "y"))
+						foreach (var fn in list)
+							$"{localMap[fn]} ->  {origMap[fn]}".PrintLine();
+
+					if (Utils.ReadWord("Restore? (y/*): ", "y"))
+						foreach (var fn in list)
+						{
+							if (copy) File.Copy(localMap[fn], origMap[fn], true);
+							else File.Move(localMap[fn], origMap[fn], true);
+						}
+					else "Aborting".PrintLine();
+				}
+
+				"Done.".PrintLine();
 			}
 
 			return 0;
