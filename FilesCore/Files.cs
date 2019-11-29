@@ -13,7 +13,13 @@ namespace Utils.Files
 
 		public static int Run(string[] args)
 		{
-			if (args.Length < 1) $"File utils v1.2".PrintHeader();
+			if (args.Length < 1)
+			{
+				var t = typeof(Files);
+				var v = t.Assembly.GetName().Version;
+				var vs = $"v{v.Major}.{v.Minor}.{v.Build}";
+				$"File utils {vs}".PrintHeader();
+			}
 			else if (Array.Exists(args, (x) => x == GA_NOPRINT)) Volatile.Write(ref Utils.SuppressPrint, true);
 
 			Utils.PrintLine("");
