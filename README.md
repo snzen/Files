@@ -42,6 +42,16 @@ files -p ext -ni -sp *.png -ext jpg
     files [separated by comma] (-files)
     add a new line before each file content (-fsep)
 
+### fcopy
+   Copies or moves files listed in a text file. Each file path must be on a separate line.
+   Args:
+
+    not interactive (-ni)
+    map file (-f)
+    destination dir (-dst)
+    move [default is copy] (-m)
+    quiet (do not report missing) (-q)
+
 ### fdelete
    Deletes files listed in a text file. Each file path must be on a separate line.
    Args:
