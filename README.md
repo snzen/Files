@@ -33,6 +33,25 @@ files -p ext -ni -sp *.png -ext jpg
     separator (-sep)
     columns (-cols) ex: -cols 1, 4
 
+### concat
+   Concatenates text files.
+   Args: 
+
+    not interactive (-ni)
+    out-file (-out)
+    files [separated by comma] (-files)
+    add a new line before each file content (-fsep)
+
+### fcopy
+   Copies or moves files listed in a text file. Each file path must be on a separate line.
+   Args:
+
+    not interactive (-ni)
+    map file (-f)
+    destination dir (-dst)
+    move [default is copy] (-m)
+    quiet (do not report missing) (-q)
+
 ### fdelete
    Deletes files listed in a text file. Each file path must be on a separate line.
    Args:
@@ -119,6 +138,7 @@ files -p ext -ni -sp *.png -ext jpg
     text file (-tf)
     search text (-text) 
     output file (-out)
+    except [takes all but the matched lines] (-x)
 
 ### lrand
    Randomizes the lines in a text file. Note that lrand will override the original file!

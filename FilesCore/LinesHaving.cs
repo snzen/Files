@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Utils.Files;
 
 namespace Utils.Files
 {
@@ -10,7 +8,7 @@ namespace Utils.Files
 	{
 		public string Name => "lhaving";
 		public string Info => "Takes matching lines from a text file and saves them to another." + Environment.NewLine +
-			"Args: not interactive (-ni), text file (-tf), search text (-text) output file (-out)";
+			"Args: not interactive (-ni), text file (-tf), search text (-text) output file (-out) except [takes all but the matched lines] (-x)";
 
 		public int Run(RunArgs ra)
 		{
@@ -19,6 +17,7 @@ namespace Utils.Files
 			var allText = string.Empty;
 			var tf = string.Empty;
 			var outfile = string.Empty;
+			var except = false;
 
 			if (interactive)
 			{
@@ -26,6 +25,10 @@ namespace Utils.Files
 				Utils.ReadString("Search text: ", ref text);
 				allText = File.ReadAllText(tf);
 				Utils.ReadString("Output file: ", ref outfile, true);
+
+				var x = string.Empty;
+				Utils.ReadString("Take all but the matched lines [default is no] (y/*): ", ref x);
+				except = x == "y";
 			}
 			else
 			{
@@ -38,6 +41,8 @@ namespace Utils.Files
 
 				if (ra.InArgs.ContainsKey("-out")) outfile = ra.InArgs.GetFirstValue("-out");
 				else throw new ArgumentNullException("-out");
+
+				if (ra.InArgs.ContainsKey("-x")) except = true;
 			}
 
 			var lines = allText.Split(Environment.NewLine);
@@ -45,13 +50,24 @@ namespace Utils.Files
 			var counter = 0;
 
 			foreach (var line in lines)
-				if (line.Length > 0 && line.Contains(text))
+				if (line.Length > 0)
 				{
-					outLines.AppendLine(line);
-					counter++;
+					if (line.Contains(text))
+					{
+						if (!except)
+						{
+							outLines.AppendLine(line);
+							counter++;
+						}
+					}
+					else if (except)
+					{
+						outLines.AppendLine(line);
+						counter++;
+					}
 				}
 
-			File.WriteAllText(outfile, outLines.ToString());
+			File.WriteAllText(outfile, outLines.ToString().Trim());
 			$"Done, {counter} matching lines.".PrintLine();
 
 			return 0;
