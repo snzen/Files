@@ -68,7 +68,7 @@ files -p ext -ni -sp *.png -ext jpg
     not interactive (-ni)
     map file [text file with paths on each line] (-map) 
     out-dir (-out)
-    mode (-mode) {h,v,hv} [horizontal, vertical, both]
+    mode (-mode) {h,v,hv,r90} [horizontal, vertical, both, 90deg right]
     search pattern [*.jpg] (-sp)
     result file prefix [opt] (-prf)
     suffix [opt] (-sfx)

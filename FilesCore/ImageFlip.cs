@@ -11,7 +11,7 @@ namespace Utils.Files
 		public string Name => "flip";
 		public string Info =>
 			"Flips images from a map file or the current dir and saves the results in destination dir. " + Environment.NewLine +
-			"Args: not interactive (-ni), map file [paths] (-map), out-dir (-out), mode (-mode) {h,v,hv} " + Environment.NewLine +
+			"Args: not interactive (-ni), map file [paths] (-map), out-dir (-out), mode (-mode) {h,v,hv,r90} " + Environment.NewLine +
 			" [horizontal, vertical, both], search pattern [*.jpg] (-sp), result file prefix [opt] (-prf), suffix [opt] (-sfx) ";
 
 		public int Run(RunArgs ra)
@@ -33,7 +33,7 @@ namespace Utils.Files
 				if (paths != null && paths.Length > 0)
 				{
 					Utils.ReadString("Destination folder: ", ref dest, true);
-					Utils.ReadString("Mode [h, v or hv]: ", ref mode, true);
+					Utils.ReadString("Mode [h, v, hv or r90]: ", ref mode, true);
 
 					if (Array.IndexOf(MODES, mode) < 0) throw new ArgumentNullException("-mode", "Incorrect mode");
 					Utils.ReadString("Result image filename prefix [optional]: ", ref prf, false);
@@ -121,6 +121,7 @@ namespace Utils.Files
 						case "h": bmp.RotateFlip(RotateFlipType.RotateNoneFlipX); break;
 						case "v": bmp.RotateFlip(RotateFlipType.RotateNoneFlipY); break;
 						case "hv": bmp.RotateFlip(RotateFlipType.RotateNoneFlipXY); break;
+						case "r90": bmp.RotateFlip(RotateFlipType.Rotate90FlipNone); break;
 						default: return;
 					}
 
@@ -143,6 +144,6 @@ namespace Utils.Files
 		string fmap, dest, prf, sfx, mode;
 		string sp = "*.jpg";
 		string[] paths = null;
-		readonly string[] MODES = new string[] { "h", "v", "hv" };
+		readonly string[] MODES = new string[] { "h", "v", "hv", "r90" };
 	}
 }
