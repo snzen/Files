@@ -173,6 +173,26 @@ files -p ext -ni -sp *.png -ext jpg
    Renames the matching files from the current folder with the names from a text
    file.
 
+### replace
+   Replaces the matching text with a given string in all/some files in a folder.
+   Args: 
+
+    interactive (-ni)
+    source dir [default is current] (-src)
+    search pattern [*.*] (-sp)
+    target regex (-reg)
+    text to replace (-txt)
+    ignore path regex [optional, Ex: (?:path\A|path\B)] (-ireg)
+    recursive [y/*] (-r)
+
+   Example converting CRLF line endings to LF:
+    
+     files -p replace -ni -src <dir> -reg (?:\r\n) -text \n
+
+   Example normal text replacement: 
+ 
+    files -p replace -ni -src <dir> -reg "text with spaces" -text "new text"
+
 ### search
    Search for files recursively.
    Args:
