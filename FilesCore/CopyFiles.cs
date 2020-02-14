@@ -26,10 +26,8 @@ namespace Utils.Files
 				Utils.ReadString("Destination dir: ", ref dst, true);
 				var q = string.Empty;
 				var m = string.Empty;
-				Utils.ReadWord("Move? The default mode is copy (y/*): ", m);
-				if (m == "y") move = true;
-				Utils.ReadWord("Quiet mode (y/*): ", q);
-				if (q == "y") quiet = true;
+				move = Utils.ReadWord("Move? The default mode is copy (y/*): ", "y");
+				quiet = Utils.ReadWord("Quiet mode (y/*): ", "y");
 			}
 			else
 			{
