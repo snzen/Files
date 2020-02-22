@@ -130,6 +130,16 @@ files -p ext -ni -sp *.png -ext jpg
 	append [by default prepends] (-append)
 	override [by default inserts] (-ovr)
 
+### lclones
+   Removes line clones in a text file.If -paths parses each line as a path and removes duplicate filenames.
+   Args: 
+    
+    not interactive (-ni)
+    source text file (-src)
+    output text file (-dst)
+    clones file (-clones)
+    lines are paths (-paths)
+
 ### linefix
    Includes text at the beginning or at the end of each line in a text file
    Args:
