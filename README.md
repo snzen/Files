@@ -156,6 +156,15 @@ files -p ext -ni -sp *.png -ext jpg
  
    not interactive (-ni), text file (-tf)
 
+### lsort
+   Sorts the lines in a text file in ascending or descending order. This will
+   override the original file!
+   Args: 
+
+    not interactive (-ni)
+    text file (-tf) 
+    descending order [by default is asc] (-desc)
+
 ### move
    Moves the matching files to DestinationDir/Prefix + Counter. Can be used as
    rename.
