@@ -247,6 +247,7 @@ files -p ext -ni -sp *.png -ext jpg
     program args (-pargs) Put in quotes and add a single space before the pargs string.
     current dir full path as arg name (-cdf)
     current dir as arg (-cd)
+    recursive (-rec)
     Example:
 	   Renames all files by prefixing them with their folder name.
        files -p traverse -ni -cdf $$ -cd $ -root <path> -proc <files>
