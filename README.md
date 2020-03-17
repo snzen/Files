@@ -137,8 +137,16 @@ files -p ext -ni -sp *.png -ext jpg
     output file (-out)
     append [by default prepends] (-append)
 
-### logrestore
+### log
    Creates a file with paths (log), which can be used to move files (restore).
+   Args:
+
+    not interactive (-ni)
+    root dir (-src)
+    search filter [*.*] (-flt)
+    not recursive (-nrec)
+    not full paths (-nfp)
+    out file (-out)
 
 ### lhaving
    Takes matching lines from a text file and saves them to another.
@@ -211,6 +219,17 @@ files -p ext -ni -sp *.png -ext jpg
    Example normal text replacement: 
  
     files -p replace -ni -src <dir> -reg "text with spaces" -text "new text"
+
+### restore:
+   Moves files matched by filename to a location listed a log file map.
+   Args:
+
+    not interactive (-ni)
+    root dir (-src)
+    log file (-map)
+    search filter (-flt)
+    not recursive (-nrec)
+    copy [default is move] (-copy)
 
 ### search
    Search for files recursively.
