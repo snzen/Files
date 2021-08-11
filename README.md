@@ -1,4 +1,4 @@
-# File utilities
+# Files
 
 [![Build status](https://ci.appveyor.com/api/projects/status/xn4k826bcvg3niaj?svg=true)](https://ci.appveyor.com/project/arsuq/files)
 
@@ -43,14 +43,16 @@ files -p ext -ni -sp *.png -ext jpg
     add a new line before each file content (-fsep)
 
 ### fcopy
-   Copies or moves files listed in a text file. Each file path must be on a separate line.
-   Args:
+   Copies or moves files listed in a text file. Each file path must be on a separate
+   line.
+   Args: 
 
     not interactive (-ni)
     map file (-f)
-    destination dir (-dst)
+    destination dir or map file (-dst)
     move [default is copy] (-m)
     quiet (do not report missing) (-q)
+    override existing (-ovr)
 
 ### fdelete
    Deletes files listed in a text file. Each file path must be on a separate line.
@@ -150,8 +152,16 @@ files -p ext -ni -sp *.png -ext jpg
     output file (-out)
     append [by default prepends] (-append)
 
-### logrestore
+### log
    Creates a file with paths (log), which can be used to move files (restore).
+   Args:
+
+    not interactive (-ni)
+    root dir (-src)
+    search filter [*.*] (-flt)
+    not recursive (-nrec)
+    not full paths (-nfp)
+    out file (-out)
 
 ### lhaving
    Takes matching lines from a text file and saves them to another.
@@ -168,6 +178,15 @@ files -p ext -ni -sp *.png -ext jpg
    Args: 
  
    not interactive (-ni), text file (-tf)
+
+### lsort
+   Sorts the lines in a text file in ascending or descending order. This will
+   override the original file!
+   Args: 
+
+    not interactive (-ni)
+    text file (-tf) 
+    descending order [by default is asc] (-desc)
 
 ### move
    Moves the matching files to DestinationDir/Prefix + Counter. Can be used as
@@ -216,6 +235,17 @@ files -p ext -ni -sp *.png -ext jpg
  
     files -p replace -ni -src <dir> -reg "text with spaces" -text "new text"
 
+### restore:
+   Moves files matched by filename to a location listed a log file map.
+   Args:
+
+    not interactive (-ni)
+    root dir (-src)
+    log file (-map)
+    search filter (-flt)
+    not recursive (-nrec)
+    copy [default is move] (-copy)
+
 ### search
    Search for files recursively.
    Args:
@@ -251,6 +281,7 @@ files -p ext -ni -sp *.png -ext jpg
     program args (-pargs) Put in quotes and add a single space before the pargs string.
     current dir full path as arg name (-cdf)
     current dir as arg (-cd)
+    recursive (-rec)
     Example:
 	   Renames all files by prefixing them with their folder name.
        files -p traverse -ni -cdf $$ -cd $ -root <path> -proc <files>
