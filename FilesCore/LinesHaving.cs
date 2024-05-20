@@ -73,7 +73,7 @@ namespace Utils.Files
 			if (append < 1)
 				File.WriteAllText(outfile, outLines.ToString().Trim());
 			else 
-				File.WriteAllText(outfile, outLines.ToString().Trim());
+				File.AppendAllText(outfile, outLines.ToString().Trim());
 			$"Done, {counter} matching lines.".PrintLine();
 
 			return 0;
