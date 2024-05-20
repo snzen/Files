@@ -8,7 +8,7 @@ namespace Utils.Files
 	{
 		public string Name => "lhaving";
 		public string Info => "Takes matching lines from a text file and saves them to another." + Environment.NewLine +
-			"Args: not interactive (-ni), text file (-tf), search text (-text) output file (-out) except [takes all but the matched lines] (-x)";
+			"Args: not interactive (-ni), text file (-tf), search text (-text) output file (-out) except [takes all but the matched lines] (-x), append to output (-a)";
 
 		public int Run(RunArgs ra)
 		{
@@ -18,6 +18,7 @@ namespace Utils.Files
 			var tf = string.Empty;
 			var outfile = string.Empty;
 			var except = false;
+			var append = 0;
 
 			if (interactive)
 			{
@@ -29,6 +30,7 @@ namespace Utils.Files
 				var x = string.Empty;
 				Utils.ReadString("Take all but the matched lines [default is no] (y/*): ", ref x);
 				except = x == "y";
+				Utils.ReadInt("Append to output: ", ref append, true);
 			}
 			else
 			{
@@ -43,6 +45,7 @@ namespace Utils.Files
 				else throw new ArgumentNullException("-out");
 
 				if (ra.InArgs.ContainsKey("-x")) except = true;
+				if (ra.InArgs.ContainsKey("-a")) append = 1;
 			}
 
 			var lines = allText.Split(Environment.NewLine);
@@ -67,7 +70,10 @@ namespace Utils.Files
 					}
 				}
 
-			File.WriteAllText(outfile, outLines.ToString().Trim());
+			if (append < 1)
+				File.WriteAllText(outfile, outLines.ToString().Trim());
+			else 
+				File.WriteAllText(outfile, outLines.ToString().Trim());
 			$"Done, {counter} matching lines.".PrintLine();
 
 			return 0;
